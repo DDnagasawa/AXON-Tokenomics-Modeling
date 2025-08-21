@@ -1,0 +1,4 @@
+scenario,description,start_month,payback_months,target_profit,cumulative_tokens_regular,cumulative_tokens_top,cumulative_electricity_high,cumulative_electricity_low,required_price_regular_high_elec,required_price_regular_low_elec,required_price_top_high_elec,required_price_top_low_elec
+early_mining,Early Mining 1-Month Payback,1,1,5000,85177.98426638439,433635.082122077,28.8,14.4,0.05903872982334266,0.05886967205420168,0.011596847689053655,0.011563640043746149
+mid_mining,Mid-Stage Mining 3-Month Payback,4,3,5000,32019.794643819907,163010.24521851275,57.6,28.8,0.15795229345657782,0.15705284983676812,0.031026270730532088,0.03084959471877961
+late_mining,Late-Stage Mining 6-Month Payback,7,6,5000,16792.09657479853,85487.13528038164,86.4,43.2,0.30290440370820854,0.30033176485947577,0.0594990109718564,0.058993671778323806
