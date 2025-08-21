@@ -1,80 +1,50 @@
-# AXON Tokenomics Analysis Project
+# AXON Tokenomics Mathematical Modeling
 
-A comprehensive tokenomics analysis and simulation framework for AXON Network, based on the official whitepaper formulas and parameters.
+基于AXON Tokenomics白皮书的数学建模项目
 
-## 🚀 Features
+## 项目简介
 
-- **Formula-Verified Simulation Engine**: Implements all whitepaper formulas with strict verification
-- **Mining Economics Analysis**: Comprehensive mining profitability and token price analysis
-- **Risk Assessment Framework**: Multi-dimensional risk analysis with Monte Carlo simulations
-- **Dynamic Weight Evolution**: Implementation of formulas (34) and (35) for time-dependent reward allocation
-- **Participant Evolution Modeling**: Based on Table 2 from the whitepaper
-- **English Visualizations**: All charts and reports generated in English for international use
+本项目根据AXON Tokenomics白皮书进行数学建模，实现了代币经济学核心概念的数值化分析和可视化。
 
-## 📊 Generated Analysis
+## 主要功能
 
-### Core Tokenomics Charts
-- **Architecture Analysis**: Complete tokenomics framework visualization
-- **Dynamic Weight Evolution**: KV/PDP weight changes over time
-- **Emission Rate Analysis**: Token emission based on formula (31)
+- **代币经济学架构分析** - 基于白皮书第3章核心概念
+- **挖矿经济模拟器** - 计算代币价格、盈利能力和回本周期
+- **风险敏感性分析** - 动态权重和风险评估
+- **可视化报告** - 生成完整的分析图表
 
-### Extended Analysis
-- **Risk Assessment Matrix**: Multi-dimensional risk evaluation
-- **Monte Carlo Simulations**: Uncertainty analysis with parameter sensitivity
-- **Mining Economics Dashboard**: Profitability analysis for different mining scenarios
+## 文件结构
 
-## 🛠️ Components
+```
+modeling/
+├── accurate_estimate/
+│   ├── v.1.2_sen&risk.py          # 风险敏感性分析
+│   ├── Mining_TkPrice.py          # 挖矿经济模拟器
+│   └── 6.6.2.2.py                 # 其他建模文件
+├── PNG/                           # 生成的图表
+└── README.md
+```
 
-### `/accurate_estimate/`
-- `v.1.2_sen&risk.py`: Comprehensive visualization framework with whitepaper verification
-- `Mining_TkPrice.py`: Mining economics and token price analysis
-- `6.6.2.2_v.1.1.py`: Formula-verified implementation based on whitepaper v1.1.0
-- `6.6.2.2_v.1.2.py`: Enhanced version with additional features
+## 使用方法
 
-### Generated Files
-- Various CSV files with simulation results
-- High-resolution PNG charts for academic use
-- Verification reports confirming whitepaper compliance
-
-## 🔬 Whitepaper Compliance
-
-All implementations are strictly verified against:
-- Formula (23): Emission rate calculation
-- Formulas (24) & (25): Dynamic weight evolution
-- Formula (31): Block reward mechanism
-- Table 2: Participant allocation over time
-
-## 📈 Usage
-
-1. **Run Core Analysis**:
+1. 安装依赖：
    ```bash
-   python accurate_estimate/v.1.2_sen&risk.py
+   pip install matplotlib seaborn pandas networkx
    ```
 
-2. **Mining Economics Analysis**:
+2. 运行分析：
    ```bash
+   python accurate_estimate/v.1.2_sen&risk.py
    python accurate_estimate/Mining_TkPrice.py
    ```
 
-3. **Formula Verification**:
-   ```bash
-   python accurate_estimate/6.6.2.2_v.1.1.py
-   ```
+## 技术栈
 
-## 📋 Requirements
+- Python
+- Matplotlib/Seaborn (数据可视化)
+- Pandas (数据处理)
+- NetworkX (图论分析)
 
-- Python 3.8+
-- NumPy, Pandas, Matplotlib, Seaborn
-- NetworkX (for network analysis)
+---
 
-## 🎯 Key Results
-
-- ✅ All whitepaper formulas implemented and verified
-- ✅ Mining profitability analysis completed
-- ✅ Risk assessment framework established
-- ✅ English-language visualizations generated
-- ✅ Academic-quality charts for presentations
-
-## 📧 Contact
-
-For questions about the analysis or implementation, please refer to the AXON Network whitepaper v1.1.0.
+*基于AXON Tokenomics白皮书开发的数学建模工具*
