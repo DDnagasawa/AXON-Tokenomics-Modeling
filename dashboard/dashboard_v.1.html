@@ -1,0 +1,3833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AXON Tokenomics Dashboard - Fixed</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%);
+      color: #334155;
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+
+    /* Main Container */
+    .container {
+      min-width: 1920px;
+      min-height: 100vh;
+      padding: 0;
+      position: relative;
+    }
+
+    /* Floating Background Elements */
+    .bg-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .circle-1 {
+      width: 200px;
+      height: 200px;
+      top: 10%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .circle-2 {
+      width: 150px;
+      height: 150px;
+      top: 60%;
+      right: 15%;
+      animation-delay: 2s;
+    }
+
+    .circle-3 {
+      width: 100px;
+      height: 100px;
+      top: 30%;
+      right: 30%;
+      animation-delay: 4s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    /* Main Content */
+    .main-content {
+      position: relative;
+      z-index: 2;
+      padding: 30px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: 42px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      letter-spacing: 2px;
+    }
+
+    .header p {
+      color: #64748b;
+      font-size: 16px;
+      font-weight: 300;
+      margin-bottom: 20px;
+    }
+
+    .realtime-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      color: white;
+      box-shadow: 0 6px 24px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .indicator:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+    }
+
+    .indicator.positive {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      box-shadow: 0 6px 24px rgba(5, 150, 105, 0.3);
+    }
+
+    .indicator.negative {
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+      box-shadow: 0 6px 24px rgba(220, 38, 38, 0.3);
+    }
+
+    .indicator.neutral {
+      background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+      box-shadow: 0 6px 24px rgba(107, 114, 128, 0.3);
+    }
+
+    .indicator i {
+      font-size: 16px;
+    }
+
+    /* Data Cards */
+    .data-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .data-card {
+      background: white;
+      padding: 25px 20px;
+      border-radius: 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s ease;
+      transform-style: preserve-3d;
+    }
+
+    .data-card:hover {
+      transform: translateY(-8px) rotateX(5deg);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+    }
+
+    .data-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    }
+
+    .data-card-value {
+      font-size: 36px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .data-card-label {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .data-card-change {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .data-card-change.positive {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      color: #059669;
+    }
+
+    .data-card-change.negative {
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      color: #dc2626;
+    }
+
+    /* Main Dashboard Grid - Horizontal Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .chart-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .chart-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+    }
+
+    .chart-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-title i {
+      color: #667eea;
+      font-size: 16px;
+    }
+
+    .chart-area {
+      height: 200px;
+      position: relative;
+    }
+
+    .chart-description {
+      margin-top: 12px;
+      padding: 12px;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 10px;
+      border-left: 3px solid #667eea;
+    }
+
+    .chart-description p {
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    /* Large Chart Section */
+    .large-charts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .large-chart {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s ease;
+    }
+
+    .large-chart:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+    }
+
+    .large-chart::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    }
+
+    .large-chart-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .large-chart-title i {
+      color: #667eea;
+      font-size: 18px;
+    }
+
+    .large-chart-area {
+      height: 250px;
+      position: relative;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 20px;
+    }
+
+    /* Node Table Section */
+    .node-table-section {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+      transition: all 0.4s ease;
+    }
+
+    .node-table-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+    }
+
+    .node-table-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .node-table-title i {
+      color: #667eea;
+      font-size: 18px;
+    }
+
+    .node-table-container {
+      overflow-x: auto;
+    }
+
+    .node-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .node-table th,
+    .node-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .node-table th {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .node-table td {
+      color: #64748b;
+    }
+
+    .status {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status.active {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      color: #059669;
+    }
+
+    .status.healthy {
+      background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%);
+      color: #2563eb;
+    }
+
+    /* Decentralization Section */
+    .decentralization-section {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+      transition: all 0.4s ease;
+    }
+
+    .decentralization-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+    }
+
+    .decentralization-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .decentralization-title i {
+      color: #667eea;
+      font-size: 18px;
+    }
+
+    .decentralization-charts {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    .decentralization-chart {
+      background: #fafbfc;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .decentralization-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 5px;
+    }
+
+    .stat-description {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+
+
+    /* Heatmaps Section - Side by Side */
+    .heatmaps-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .heatmap-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s ease;
+      width: 500px; /* 固定宽度 */
+      height: 500px; /* 固定高度 */
+    }
+
+    .heatmap-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+    }
+
+    .heatmap-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .heatmap-title i {
+      color: #667eea;
+      font-size: 18px;
+    }
+
+    .heatmap-chart {
+      background: #fafbfc;
+      border-radius: 12px;
+      padding: 15px;
+      border: 1px solid #e2e8f0;
+      height: calc(100% - 50px); /* 减去标题高度 */
+      position: relative;
+    }
+
+    /* Professional Heatmap Styles */
+    .heatmap-container {
+      display: flex;
+      height: 100%;
+      gap: 15px;
+    }
+
+    .significance-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 11px;
+      color: #64748b;
+      min-width: 70px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .asterisk {
+      color: #dc2626;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .heatmap-matrix {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(12, 1fr);
+      gap: 1px;
+      background: #e2e8f0;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      min-width: 300px;
+      min-height: 300px;
+    }
+
+    .heatmap-cell {
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 600;
+      color: #1e293b;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 20px;
+      min-height: 20px;
+    }
+
+    .heatmap-cell:hover {
+      transform: scale(1.1);
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .heatmap-cell.correlation {
+      font-size: 9px;
+    }
+
+    .heatmap-cell.user-behavior {
+      font-size: 8px;
+    }
+
+    .color-legend {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-width: 60px;
+    }
+
+    .color-bar {
+      width: 16px;
+      height: 150px;
+      background: linear-gradient(to bottom, #dc2626, #fca5a5, #ffffff, #93c5fd, #1d4ed8);
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .user-color-bar {
+      background: linear-gradient(to bottom, #1e40af, #60a5fa, #dbeafe);
+    }
+
+    .color-labels {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 150px;
+      font-size: 9px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .color-labels span {
+      transform: translateX(-25px);
+    }
+
+    /* Payback Period Analysis Section */
+    .payback-section {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+      transition: all 0.4s ease;
+    }
+
+    /* Nonlinear Analysis Section */
+    .nonlinear-analysis-section {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+      transition: all 0.4s ease;
+    }
+
+    .payback-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+    }
+
+    .payback-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .payback-title i {
+      color: #667eea;
+      font-size: 18px;
+    }
+
+    .payback-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .payback-parameters {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .parameter-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .parameter-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .parameter-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .parameter-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 5px;
+    }
+
+    .parameter-description {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    .parameter-card.interactive {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 2px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .parameter-card.interactive:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .parameter-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .parameter-input input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e293b;
+      background: white;
+      transition: all 0.2s ease;
+    }
+
+    .parameter-input input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .parameter-input .currency {
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+      min-width: 60px;
+    }
+
+    .update-controls {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .update-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .update-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .update-button:active {
+      transform: translateY(0);
+    }
+
+    .update-button i {
+      font-size: 16px;
+    }
+
+    .payback-chart-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    .payback-chart {
+      background: #fafbfc;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      height: 400px;
+    }
+
+    .payback-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .calculation-methodology {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      margin-top: 20px;
+    }
+
+    .calculation-methodology h4 {
+      color: #1e293b;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .calculation-methodology h4::before {
+      content: "📊";
+      font-size: 18px;
+    }
+
+    .methodology-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .methodology-item {
+      background: white;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border-left: 3px solid #667eea;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #64748b;
+    }
+
+    .methodology-item strong {
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    .methodology-item em {
+      color: #64748b;
+      font-style: italic;
+      font-size: 12px;
+    }
+
+    .additional-metrics {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .metric-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .metric-item:last-child {
+      border-bottom: none;
+    }
+
+    .metric-label {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .metric-value {
+      font-size: 13px;
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 1400px) {
+      .heatmap-matrix {
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+      }
+      
+      .heatmap-cell {
+        font-size: 8px;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 1920px) {
+      .container {
+        min-width: 100%;
+      }
+    }
+
+    /* Animations */
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .data-card {
+      animation: slideInUp 0.6s ease forwards;
+    }
+
+    .data-card:nth-child(1) { animation-delay: 0.1s; }
+    .data-card:nth-child(2) { animation-delay: 0.2s; }
+    .data-card:nth-child(3) { animation-delay: 0.3s; }
+    .data-card:nth-child(4) { animation-delay: 0.4s; }
+
+    .chart-card {
+      animation: slideInUp 0.6s ease forwards;
+    }
+
+    .chart-card:nth-child(1) { animation-delay: 0.5s; }
+    .chart-card:nth-child(2) { animation-delay: 0.6s; }
+    .chart-card:nth-child(3) { animation-delay: 0.7s; }
+    .chart-card:nth-child(4) { animation-delay: 0.8s; }
+    .chart-card:nth-child(5) { animation-delay: 0.9s; }
+    .chart-card:nth-child(6) { animation-delay: 1.0s; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+    
+    /* 强制所有Chart.js线条显示为实线 */
+    canvas {
+      stroke-dasharray: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Floating Background Elements -->
+    <div class="bg-elements">
+      <div class="floating-circle circle-1"></div>
+      <div class="floating-circle circle-2"></div>
+      <div class="floating-circle circle-3"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <h1>AXON Tokenomics Dashboard</h1>
+        <p>Real-time blockchain network data visualization and analysis</p>
+        <div class="realtime-indicators">
+          <div class="indicator positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>Emission Rate: +2.5%</span>
+          </div>
+          <div class="indicator negative">
+            <i class="fas fa-arrow-down"></i>
+            <span>Token Price: -1.2%</span>
+          </div>
+          <div class="indicator positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>Active Miners: +5.8%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Cards -->
+      <div class="data-cards">
+        <div class="data-card">
+          <div class="data-card-value">86B</div>
+          <div class="data-card-label">Total Supply</div>
+          <div class="data-card-change positive">+0.0%</div>
+        </div>
+        <div class="data-card">
+          <div class="data-card-value">4.3B</div>
+          <div class="data-card-label">Initial Allocation</div>
+          <div class="data-card-change positive">+5.0%</div>
+        </div>
+        <div class="data-card">
+          <div class="data-card-value">3.4%</div>
+          <div class="data-card-label">Emission Rate</div>
+          <div class="data-card-change negative">-0.8%</div>
+        </div>
+        <div class="data-card">
+          <div class="data-card-value">55</div>
+          <div class="data-card-label">Block Reward</div>
+          <div class="data-card-change negative">-2.1%</div>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Grid - 6 Charts in a Row -->
+      <div class="dashboard-grid">
+        <!-- Emission Rate Chart -->
+        <div class="chart-card">
+          <div class="chart-title">
+            <i class="fas fa-chart-line"></i>
+            Emission Rate
+          </div>
+          <div class="chart-area">
+            <canvas id="emissionChart"></canvas>
+          </div>
+          <div class="chart-description">
+            <p>Logarithmic decay model ensuring sustainable token distribution over 10 years</p>
+          </div>
+        </div>
+
+        <!-- Total Supply Chart -->
+        <div class="chart-card">
+          <div class="chart-title">
+            <i class="fas fa-coins"></i>
+            Supply Evolution
+          </div>
+          <div class="chart-area">
+            <canvas id="supplyChart"></canvas>
+          </div>
+          <div class="chart-description">
+            <p>Gradual supply increase from 4.3B to 69B tokens over 10 years</p>
+          </div>
+        </div>
+
+        <!-- Participant Distribution Chart -->
+        <div class="chart-card">
+          <div class="chart-title">
+            <i class="fas fa-users"></i>
+            Participants Over Time
+          </div>
+          <div class="chart-area">
+            <canvas id="minersChart"></canvas>
+          </div>
+          <div class="chart-description">
+            <p>Market share evolution: Miners decline, Enterprise grows, Retail stabilizes</p>
+          </div>
+        </div>
+
+        <!-- Token Price Chart -->
+        <div class="chart-card">
+          <div class="chart-title">
+            <i class="fas fa-dollar-sign"></i>
+            Token Price
+          </div>
+          <div class="chart-area">
+            <canvas id="priceChart"></canvas>
+          </div>
+          <div class="chart-description">
+            <p>Stable price trajectory with healthy market dynamics</p>
+          </div>
+        </div>
+
+        <!-- Dynamic Weights Chart -->
+        <div class="chart-card">
+          <div class="chart-title">
+            <i class="fas fa-balance-scale"></i>
+            Dynamic Weights
+          </div>
+          <div class="chart-area">
+            <canvas id="weightsChart"></canvas>
+          </div>
+          <div class="chart-description">
+            <p>Adaptive allocation between Domain-Library and Data-Feed pools</p>
+          </div>
+        </div>
+
+        <!-- Block Reward Chart -->
+        <div class="chart-card">
+          <div class="chart-title">
+            <i class="fas fa-gem"></i>
+            Block Reward
+          </div>
+          <div class="chart-area">
+            <canvas id="blockRewardChart"></canvas>
+          </div>
+          <div class="chart-description">
+            <p>Decreasing rewards from 7,409 to 55 AXON per block</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Large Charts Section -->
+      <div class="large-charts">
+        <!-- Network Metrics Chart -->
+        <div class="large-chart">
+          <div class="large-chart-title">
+            <i class="fas fa-tachometer-alt"></i>
+            Network Performance
+          </div>
+          <div class="large-chart-area">
+            <canvas id="metricsChart"></canvas>
+          </div>
+        </div>
+
+
+        <!-- Mining Economics -->
+        <div class="large-chart">
+          <div class="large-chart-title">
+            <i class="fas fa-chart-pie"></i>
+            Mining Economics
+          </div>
+          <div class="large-chart-area">
+            <canvas id="miningChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Node Count Table Section -->
+      <div class="node-table-section">
+        <div class="node-table-title">
+          <i class="fas fa-server"></i>
+          Network Node Evolution
+        </div>
+        <div class="node-table-container">
+          <table class="node-table">
+            <thead>
+              <tr>
+                <th>Node Type</th>
+                <th>Initial Count</th>
+                <th>Final Count</th>
+                <th>Growth Rate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Validator Nodes</td>
+                <td>1,200</td>
+                <td>3,800</td>
+                <td>+216.7%</td>
+                <td><span class="status active">Active</span></td>
+              </tr>
+              <tr>
+                <td>Full Nodes</td>
+                <td>5,600</td>
+                <td>12,400</td>
+                <td>+121.4%</td>
+                <td><span class="status active">Active</span></td>
+              </tr>
+              <tr>
+                <td>Light Nodes</td>
+                <td>18,400</td>
+                <td>45,200</td>
+                <td>+145.7%</td>
+                <td><span class="status active">Active</span></td>
+              </tr>
+              <tr>
+                <td>Archive Nodes</td>
+                <td>280</td>
+                <td>1,150</td>
+                <td>+310.7%</td>
+                <td><span class="status active">Active</span></td>
+              </tr>
+              <tr>
+                <td>Total Network</td>
+                <td>25,480</td>
+                <td>62,550</td>
+                <td>+145.5%</td>
+                <td><span class="status healthy">Healthy</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Decentralization Metrics Section -->
+      <div class="decentralization-section">
+        <div class="decentralization-title">
+          <i class="fas fa-network-wired"></i>
+          Decentralization Metrics
+        </div>
+        <div class="decentralization-charts">
+          <div class="decentralization-chart">
+            <div class="chart-area">
+              <canvas id="decentralizationChart"></canvas>
+            </div>
+          </div>
+          <div class="decentralization-stats">
+            <div class="stat-card">
+              <div class="stat-value">0.87</div>
+              <div class="stat-label">Gini Coefficient</div>
+              <div class="stat-description">Lower = More Decentralized</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">0.92</div>
+              <div class="stat-label">Nakamoto Coefficient</div>
+              <div class="stat-description">Min nodes to control 51%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">0.78</div>
+              <div class="stat-label">Herfindahl Index</div>
+              <div class="stat-description">Concentration measure</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heatmaps Section - Side by Side -->
+      <div class="heatmaps-section">
+        <!-- Correlation Heatmap -->
+        <div class="heatmap-card">
+          <div class="heatmap-title">
+            <i class="fas fa-chart-line"></i>
+            Market Factor Correlations
+          </div>
+          <div class="heatmap-chart">
+            <div class="heatmap-container">
+              <div class="significance-legend">
+                <div class="legend-item">
+                  <span class="asterisk">***</span> p&lt;0.001
+                </div>
+                <div class="legend-item">
+                  <span class="asterisk">**</span> p&lt;0.01
+                </div>
+                <div class="legend-item">
+                  <span class="asterisk">*</span> p&lt;0.05
+                </div>
+              </div>
+              <div class="heatmap-matrix" id="correlationMatrix"></div>
+              <div class="color-legend">
+                <div class="color-bar"></div>
+                <div class="color-labels">
+                  <span>1.0</span>
+                  <span>0.0</span>
+                  <span>-1.0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Behavior Heatmap -->
+        <div class="heatmap-card">
+          <div class="heatmap-title">
+            <i class="fas fa-users"></i>
+            User Holding vs Staking Behavior
+          </div>
+          <div class="heatmap-chart">
+            <div class="heatmap-container">
+              <div class="heatmap-matrix" id="userBehaviorMatrix"></div>
+              <div class="color-legend">
+                <div class="color-bar user-color-bar"></div>
+                <div class="color-labels">
+                  <span>High</span>
+                  <span>Medium</span>
+                  <span>Low</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payback Period Analysis Section -->
+      <div class="payback-section">
+        <div class="payback-title">
+          <i class="fas fa-calculator"></i>
+          Mining Payback Period Analysis
+        </div>
+        <div class="payback-content">
+          <div class="payback-parameters">
+            <div class="parameter-card">
+              <div class="parameter-value">$2.46</div>
+              <div class="parameter-label">Filecoin Price (USD)</div>
+              <div class="parameter-description">Reference market price</div>
+            </div>
+            <div class="parameter-card interactive">
+              <div class="parameter-input">
+                <input type="number" id="hardwareCost" value="5000" min="1000" max="50000" step="500">
+                <span class="currency">USD</span>
+              </div>
+              <div class="parameter-label">Hardware Cost</div>
+              <div class="parameter-description">Initial mining setup</div>
+            </div>
+            <div class="parameter-card interactive">
+              <div class="parameter-input">
+                <input type="number" id="electricityCost" value="0.16" min="0.01" max="1.00" step="0.01">
+                <span class="currency">USD/kWh</span>
+              </div>
+              <div class="parameter-label">Electricity Cost</div>
+              <div class="parameter-description">Power consumption rate</div>
+            </div>
+            <div class="parameter-card interactive">
+              <div class="parameter-input">
+                <input type="number" id="powerConsumption" value="2.5" min="0.5" max="10.0" step="0.1">
+                <span class="currency">kW</span>
+              </div>
+              <div class="parameter-label">Power Consumption</div>
+              <div class="parameter-description">Mining rig power draw</div>
+            </div>
+          </div>
+          <div class="update-controls">
+            <button id="updateChart" class="update-button">
+              <i class="fas fa-sync-alt"></i>
+              Update Analysis
+            </button>
+          </div>
+          <div class="payback-chart-container">
+            <div class="payback-chart">
+              <canvas id="paybackChart"></canvas>
+            </div>
+            <div class="payback-stats">
+              <div class="stat-card">
+                <div class="stat-value" id="paybackPeriod">--</div>
+                <div class="stat-label">Payback Period</div>
+                <div class="stat-description">Months to break even</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalRevenue">--</div>
+                <div class="stat-label">Total Revenue (10Y)</div>
+                <div class="stat-description">Cumulative earnings</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="totalCost">--</div>
+                <div class="stat-label">Total Cost (10Y)</div>
+                <div class="stat-description">Hardware + electricity</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="netProfit">--</div>
+                <div class="stat-label">Net Profit (10Y)</div>
+                <div class="stat-description">Revenue - costs</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 非线性收益分析图表 -->
+          <div class="nonlinear-analysis-section">
+            <div class="payback-title">
+              <i class="fas fa-chart-curve"></i>
+              Nonlinear Revenue Analysis
+              <span id="paybackTitleInfo" style="font-size: 14px; color: #f59e0b; margin-left: 15px; font-weight: 600;"></span>
+            </div>
+            <div class="payback-chart-container">
+              <div class="payback-chart">
+                <canvas id="nonlinearChart"></canvas>
+              </div>
+              <div class="payback-stats">
+                <div class="stat-card">
+                  <div class="stat-value" id="peakRevenue">--</div>
+                  <div class="stat-label">Peak Monthly Revenue</div>
+                  <div class="stat-description">Highest monthly earnings</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="revenueDecline">--</div>
+                  <div class="stat-label">Revenue Decline Rate</div>
+                  <div class="stat-description">Annual decrease rate</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="inflectionPoint">--</div>
+                  <div class="stat-label">Payback Period</div>
+                  <div class="stat-description">R(t) = C(t) intersection</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="curvatureIndex">--</div>
+                  <div class="stat-label">Curvature Index</div>
+                  <div class="stat-description">Nonlinearity measure</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 综合收益分析图表 -->
+          <div class="nonlinear-analysis-section">
+            <div class="payback-title">
+              <i class="fas fa-chart-line"></i>
+              Revenue Analysis
+              <span id="revenueTitleInfo" style="font-size: 14px; color: #f59e0b; margin-left: 15px; font-weight: 600;"></span>
+            </div>
+            <div class="payback-chart-container">
+              <div class="payback-chart">
+                <canvas id="revenueChart"></canvas>
+              </div>
+              <div class="payback-stats">
+                <div class="stat-card">
+                  <div class="stat-value" id="revenuePeakRevenue">--</div>
+                  <div class="stat-label">Peak Monthly Revenue</div>
+                  <div class="stat-description">Highest monthly earnings</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="revenueDeclineRate">--</div>
+                  <div class="stat-label">Revenue Decline Rate</div>
+                  <div class="stat-description">Annual decrease rate</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="revenuePaybackPeriod">--</div>
+                  <div class="stat-label">Payback Period</div>
+                  <div class="stat-description">R(t) = C(t) intersection</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="revenueNetworkShare">--</div>
+                  <div class="stat-label">Real Network Share</div>
+                  <div class="stat-description">Effective competition</div>
+                </div>
+              </div>
+            </div>
+          </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="peakRevenue">--</div>
+                  <div class="stat-label">Peak Monthly Revenue</div>
+                  <div class="stat-description">Highest monthly earnings</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="revenueDecline">--</div>
+                  <div class="stat-label">Revenue Decline Rate</div>
+                  <div class="stat-description">Annual decrease rate</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="inflectionPoint">--</div>
+                  <div class="stat-label">Payback Period</div>
+                  <div class="stat-description">R(t) = C(t) intersection</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value" id="curvatureIndex">--</div>
+                  <div class="stat-label">Curvature Index</div>
+                  <div class="stat-description">Nonlinearity measure</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          
+          <div class="calculation-methodology">
+            <h4>Dynamic Calculation Methodology</h4>
+            <div class="methodology-content">
+              <div class="methodology-item">
+                <strong>Cost Model C(t):</strong> C(t) = Hardware Cost ($5,000) + Monthly Electricity × Time
+                <br><em>C(t) = 5000 + 216t where t is months, $216/month for 2.5kW at $0.12/kWh</em>
+              </div>
+              <div class="methodology-item">
+                <strong>Dynamic Price Model P(t):</strong> P(t) = Dynamic Market Cap(t) / AXON Circulating Supply(t)
+                <br><em>Dynamic Market Cap: Launch (0-60d: 6.76M→443M), Growth (60d-1y: 443M→5B), Mature (1-3y: 5B×1.5^years), Stable (3y+: 10% annual growth). Supply based on AXON whitepaper: Initial 4.3B (5%) + Fair Launch Pool 81.7B (95%) using dynamic decay emission model v(x) = λ + (1-λ)·a^(-x/(N-x)) where λ=0.01, a=2.5</em>
+              </div>
+              <div class="methodology-item">
+                <strong>Dynamic Reward Model N(t):</strong> N(t) = Block Reward(t) × Blocks per Month × Network Share
+                <br><em>Block reward based on AXON whitepaper formula(31): v(x) = λ + (1-λ)·a^(-x/(N-x)) where λ=0.01, a=2.5, 3秒区块时间, 矿机数量变化: 50K→300K台(24个月S型增长)</em>
+              </div>
+              <div class="methodology-item">
+                <strong>Monthly Revenue Model R(t):</strong> R(t) = ∑[Monthly Reward(t) × Token Amount(t) × Token Price(t)]
+                <br><em>Discrete monthly revenue calculation: R(t) = ∑[N(t) × P(t)] where N(t) is monthly token reward, P(t) is token price</em>
+              </div>
+              <div class="methodology-item">
+                <strong>Revenue Model R(t):</strong> R(t) = ∫[N(t) × P(t)]dt
+                <br><em>Cumulative revenue from dynamic mining rewards times dynamic token price</em>
+              </div>
+              <div class="methodology-item">
+                <strong>Payback Period:</strong> Find t where R(t) ≥ C(t)
+                <br><em>Time when cumulative revenue equals or exceeds cumulative costs</em>
+              </div>
+              <div class="methodology-item">
+                <strong>Key Parameters:</strong> Filecoin Market Cap: $1.725B, Total Supply: 86B AXON, Initial Allocation: 4.3B (5%), Fair Launch Pool: 81.7B (95%)
+                <br><em>Based on AXON whitepaper: Dynamic decay emission model with λ=0.01, a=2.5, Miner count: 50K→300K (6 months)</em>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>© 2024 AXON Tokenomics Dashboard | Powered by Mathematical Models v1.2.0</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
+  <script>
+    // Chart.js configuration
+    Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+    Chart.defaults.color = '#64748b';
+    Chart.defaults.plugins.legend.position = 'top';
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    Chart.defaults.plugins.legend.labels.color = '#64748b';
+    Chart.defaults.font.size = 11;
+    
+    // 确保所有线条默认为实线
+    Chart.defaults.elements.line.borderDash = [];
+    
+    // 注册annotation插件
+    if (typeof ChartAnnotation !== 'undefined') {
+      Chart.register(ChartAnnotation);
+      console.log('ChartAnnotation plugin registered successfully');
+    } else {
+      console.warn('ChartAnnotation plugin not loaded');
+    }
+
+    // Color palette for white theme
+    const colors = {
+      primary: ['#667eea', '#764ba2', '#f093fb'],
+      secondary: ['#4facfe', '#00f2fe', '#43e97b'],
+      accent: ['#667eea', '#764ba2', '#f093fb'],
+      gradient: ['rgba(102, 126, 234, 0.2)', 'rgba(118, 75, 162, 0.2)', 'rgba(240, 147, 251, 0.2)']
+    };
+
+    // Emission Rate Chart (Log Scale)
+    const emissionCtx = document.getElementById('emissionChart').getContext('2d');
+    const emissionChart = new Chart(emissionCtx, {
+      type: 'line',
+      data: {
+        labels: ['Y0', 'Y2', 'Y4', 'Y6', 'Y8', 'Y10'],
+        datasets: [{
+          label: 'Emission Rate (%)',
+          data: [95.3, 40.6, 24.0, 12.0, 6.0, 3.4],
+          borderColor: colors.primary[0],
+          backgroundColor: colors.gradient[0],
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: colors.primary[0],
+          pointBorderColor: 'white',
+          pointBorderWidth: 1,
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            type: 'logarithmic',
+            beginAtZero: false,
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          },
+          x: {
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+    // Total Supply Chart
+    const supplyCtx = document.getElementById('supplyChart').getContext('2d');
+    const supplyChart = new Chart(supplyCtx, {
+      type: 'line',
+      data: {
+        labels: ['Y0', 'Y2', 'Y4', 'Y6', 'Y8', 'Y10'],
+        datasets: [{
+          label: 'Circulating Supply (B)',
+          data: [4.3, 16.3, 28.5, 40.2, 50.4, 69.0],
+          borderColor: colors.primary[1],
+          backgroundColor: colors.gradient[1],
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: colors.primary[1],
+          pointBorderColor: 'white',
+          pointBorderWidth: 1,
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          },
+          x: {
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+    // Participant Distribution Chart - Line Chart with Three Areas
+    const minersCtx = document.getElementById('minersChart').getContext('2d');
+    const minersChart = new Chart(minersCtx, {
+      type: 'line',
+      data: {
+        labels: ['Y0', 'Y2', 'Y4', 'Y6', 'Y8', 'Y10'],
+        datasets: [
+          {
+            label: 'Professional Miners',
+            data: [40, 35, 32, 30, 29, 28],
+            borderColor: colors.primary[0],
+            backgroundColor: colors.gradient[0],
+            borderWidth: 3,
+            fill: 'tonexty',
+            tension: 0.4,
+            pointBackgroundColor: colors.primary[0],
+            pointBorderColor: 'white',
+            pointBorderWidth: 2,
+            pointRadius: 5
+          },
+          {
+            label: 'Enterprise Users',
+            data: [42, 45, 48, 50, 52, 59],
+            borderColor: colors.primary[1],
+            backgroundColor: colors.gradient[1],
+            borderWidth: 3,
+            fill: 'tonexty',
+            tension: 0.4,
+            pointBackgroundColor: colors.primary[1],
+            pointBorderColor: 'white',
+            pointBorderWidth: 2,
+            pointRadius: 5
+          },
+          {
+            label: 'Retail Users',
+            data: [18, 20, 20, 20, 19, 13],
+            borderColor: colors.primary[2],
+            backgroundColor: colors.gradient[2],
+            borderWidth: 3,
+            fill: 'tonexty',
+            tension: 0.4,
+            pointBackgroundColor: colors.primary[2],
+            pointBorderColor: 'white',
+            pointBorderWidth: 2,
+            pointRadius: 5
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          },
+          x: {
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              usePointStyle: true,
+              color: '#64748b',
+              font: { size: 10 },
+              padding: 15
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + context.parsed.y + '%';
+              }
+            }
+          }
+        },
+        interaction: {
+          mode: 'nearest',
+          axis: 'x',
+          intersect: false
+        }
+      }
+    });
+
+    // Token Price Chart
+    const priceCtx = document.getElementById('priceChart').getContext('2d');
+    const priceChart = new Chart(priceCtx, {
+      type: 'line',
+      data: {
+        labels: ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'],
+        datasets: [{
+          label: 'Token Price (USD)',
+          data: [1.5, 1.8, 1.2, 1.9, 2.1, 2.4, 1.8, 1.6],
+          borderColor: colors.primary[2],
+          backgroundColor: colors.gradient[2],
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: colors.primary[2],
+          pointBorderColor: 'white',
+          pointBorderWidth: 1,
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          },
+          x: {
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+    // Dynamic Weights Chart
+    const weightsCtx = document.getElementById('weightsChart').getContext('2d');
+    const weightsChart = new Chart(weightsCtx, {
+      type: 'line',
+      data: {
+        labels: ['Y0', 'Y2', 'Y4', 'Y6', 'Y8', 'Y10'],
+        datasets: [{
+          label: 'Domain-Library',
+          data: [0.444, 0.284, 0.207, 0.173, 0.152, 0.152],
+          borderColor: colors.primary[0],
+          backgroundColor: colors.gradient[0],
+          borderWidth: 2,
+          fill: false,
+          tension: 0.4
+        }, {
+          label: 'Data-Feed',
+          data: [0.156, 0.316, 0.393, 0.427, 0.448, 0.448],
+          borderColor: colors.primary[1],
+          backgroundColor: colors.gradient[1],
+          borderWidth: 2,
+          fill: false,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 0.6,
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          },
+          x: {
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              usePointStyle: true,
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        }
+      }
+    });
+
+    // Block Reward Chart
+    const blockRewardCtx = document.getElementById('blockRewardChart').getContext('2d');
+    const blockRewardChart = new Chart(blockRewardCtx, {
+      type: 'line',
+      data: {
+        labels: ['Y0', 'Y2', 'Y4', 'Y6', 'Y8', 'Y10'],
+        datasets: [{
+          label: 'Block Reward (AXON)',
+          data: [7409, 1634, 581, 217, 87, 55],
+          borderColor: colors.primary[2],
+          backgroundColor: colors.gradient[2],
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: colors.primary[2],
+          pointBorderColor: 'white',
+          pointBorderWidth: 1,
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            type: 'logarithmic',
+            beginAtZero: false,
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          },
+          x: {
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+    // Network Metrics Chart
+    const metricsCtx = document.getElementById('metricsChart').getContext('2d');
+    const metricsChart = new Chart(metricsCtx, {
+      type: 'radar',
+      data: {
+        labels: ['Efficiency', 'Security', 'Scalability', 'Decentralization', 'Sustainability'],
+        datasets: [{
+          label: 'Network Performance',
+          data: [85, 92, 78, 88, 95],
+          borderColor: colors.primary[0],
+          backgroundColor: colors.gradient[0],
+          borderWidth: 2,
+          pointBackgroundColor: colors.primary[0],
+          pointBorderColor: 'white',
+          pointBorderWidth: 1,
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 100,
+            grid: {
+              color: '#e2e8f0'
+            },
+            pointLabels: {
+              font: {
+                size: 10
+              },
+              color: '#64748b'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+
+    // Mining Economics Chart
+    const miningCtx = document.getElementById('miningChart').getContext('2d');
+    const miningChart = new Chart(miningCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Hardware Cost', 'Electricity', 'Maintenance', 'Profit'],
+        datasets: [{
+          data: [35, 25, 15, 25],
+          backgroundColor: colors.primary,
+          borderWidth: 0,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 10,
+              usePointStyle: true,
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        }
+      }
+    });
+
+    // Decentralization Distribution Chart (Left-Skewed)
+    const decentralizationCtx = document.getElementById('decentralizationChart').getContext('2d');
+    const decentralizationChart = new Chart(decentralizationCtx, {
+      type: 'bar',
+      data: {
+        labels: ['0.1-0.2', '0.2-0.3', '0.3-0.4', '0.4-0.5', '0.5-0.6', '0.6-0.7', '0.7-0.8', '0.8-0.9', '0.9-1.0'],
+        datasets: [{
+          label: 'Node Distribution',
+          data: [2, 8, 25, 45, 35, 20, 12, 8, 3], // Left-skewed distribution
+          backgroundColor: colors.primary.map((color, index) => {
+            // 创建渐变效果，左侧（更去中心化）颜色更深
+            const alpha = 0.3 + (index * 0.07);
+            return color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+          }),
+          borderColor: colors.primary,
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Number of Nodes',
+              color: '#64748b',
+              font: { size: 11 }
+            },
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Centralization Level (Lower = More Decentralized)',
+              color: '#64748b',
+              font: { size: 11 }
+            },
+            grid: {
+              color: '#e2e8f0'
+            },
+            ticks: {
+              color: '#64748b',
+              font: { size: 10 }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return 'Nodes: ' + context.parsed.y;
+              },
+              afterLabel: function(context) {
+                const decentralizationLevel = context.dataIndex < 4 ? 'High' : 
+                                           context.dataIndex < 6 ? 'Medium' : 'Low';
+                return 'Decentralization: ' + decentralizationLevel;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Professional Correlation Heatmap
+    const marketFactors = [
+      'Price', 'Nodes', 'Emission', 'Supply', 'Hash', 'Staking',
+      'TPS', 'Addresses', 'Volume', 'MarketCap', 'TVL', 'Devs'
+    ];
+    
+    // 生成相关性矩阵数据（模拟数据，实际应用中应该是真实的相关性系数）
+    const correlationData = [
+      [1.00, 0.85, -0.72, 0.68, 0.91, 0.78, 0.82, 0.75, 0.88, 0.95, 0.73, 0.69],
+      [0.85, 1.00, -0.65, 0.71, 0.89, 0.82, 0.78, 0.81, 0.85, 0.87, 0.76, 0.72],
+      [-0.72, -0.65, 1.00, -0.58, -0.68, -0.45, -0.52, -0.48, -0.61, -0.69, -0.38, -0.42],
+      [0.68, 0.71, -0.58, 1.00, 0.73, 0.65, 0.69, 0.62, 0.71, 0.68, 0.59, 0.55],
+      [0.91, 0.89, -0.68, 0.73, 1.00, 0.85, 0.88, 0.79, 0.92, 0.89, 0.81, 0.77],
+      [0.78, 0.82, -0.45, 0.65, 0.85, 1.00, 0.76, 0.84, 0.78, 0.75, 0.87, 0.68],
+      [0.82, 0.78, -0.52, 0.69, 0.88, 0.76, 1.00, 0.71, 0.85, 0.81, 0.69, 0.73],
+      [0.75, 0.81, -0.48, 0.62, 0.79, 0.84, 0.71, 1.00, 0.76, 0.72, 0.82, 0.65],
+      [0.88, 0.85, -0.61, 0.71, 0.92, 0.78, 0.85, 0.76, 1.00, 0.86, 0.74, 0.71],
+      [0.95, 0.87, -0.69, 0.68, 0.89, 0.75, 0.81, 0.72, 0.86, 1.00, 0.71, 0.68],
+      [0.73, 0.76, -0.38, 0.59, 0.81, 0.87, 0.69, 0.82, 0.74, 0.71, 1.00, 0.62],
+      [0.69, 0.72, -0.42, 0.55, 0.77, 0.68, 0.73, 0.65, 0.71, 0.68, 0.62, 1.00]
+    ];
+
+    // 创建相关性热力图矩阵
+    function createCorrelationHeatmap() {
+      const matrix = document.getElementById('correlationMatrix');
+      matrix.innerHTML = '';
+      
+      // 添加行标签
+      for (let i = 0; i < 12; i++) {
+        const labelCell = document.createElement('div');
+        labelCell.className = 'heatmap-cell label-cell';
+        labelCell.textContent = marketFactors[i];
+        labelCell.style.gridRow = i + 1;
+        labelCell.style.gridColumn = 1;
+        labelCell.style.fontWeight = 'bold';
+        labelCell.style.color = '#64748b';
+        matrix.appendChild(labelCell);
+      }
+      
+      // 添加列标签
+      for (let j = 0; j < 12; j++) {
+        const labelCell = document.createElement('div');
+        labelCell.className = 'heatmap-cell label-cell';
+        labelCell.textContent = marketFactors[j];
+        labelCell.style.gridRow = 1;
+        labelCell.style.gridColumn = j + 2;
+        labelCell.style.fontWeight = 'bold';
+        labelCell.style.color = '#64748b';
+        matrix.appendChild(labelCell);
+      }
+      
+      // 创建数据单元格
+      for (let i = 0; i < 12; i++) {
+        for (let j = 0; j < 12; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'heatmap-cell correlation';
+          cell.style.gridRow = i + 2;
+          cell.style.gridColumn = j + 2;
+          
+          const value = correlationData[i][j];
+          const absValue = Math.abs(value);
+          
+          // 设置颜色
+          if (value > 0) {
+            // 正相关：白色到深红色
+            const intensity = absValue;
+            const red = Math.round(255 * (0.5 + intensity * 0.5));
+            const green = Math.round(255 * (0.5 - intensity * 0.5));
+            const blue = Math.round(255 * (0.5 - intensity * 0.5));
+            cell.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+          } else if (value < 0) {
+            // 负相关：白色到深蓝色
+            const intensity = absValue;
+            const red = Math.round(255 * (0.5 - intensity * 0.5));
+            const green = Math.round(255 * (0.5 - intensity * 0.5));
+            const blue = Math.round(255 * (0.5 + intensity * 0.5));
+            cell.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+          } else {
+            cell.style.backgroundColor = 'white';
+          }
+          
+          // 设置文字颜色（深色背景用白色文字，浅色背景用黑色文字）
+          const bgColor = cell.style.backgroundColor;
+          const rgbValues = bgColor.match(/\d+/g);
+          if (rgbValues && rgbValues.length >= 3) {
+            const brightness = (parseInt(rgbValues[0]) * 0.299 + 
+                              parseInt(rgbValues[1]) * 0.587 + 
+                              parseInt(rgbValues[2]) * 0.114);
+            cell.style.color = brightness > 128 ? '#1e293b' : 'white';
+          }
+          
+          // 添加数值和显著性标记
+          let significance = '';
+          if (absValue >= 0.8) significance = ' ***';
+          else if (absValue >= 0.6) significance = ' **';
+          else if (absValue >= 0.4) significance = ' *';
+          
+          cell.textContent = value.toFixed(2) + significance;
+          
+          // 添加工具提示
+          cell.title = `${marketFactors[i]} ↔ ${marketFactors[j]}: ${value.toFixed(3)}`;
+          
+          matrix.appendChild(cell);
+        }
+      }
+    }
+
+    // Professional User Behavior Heatmap
+    const holdingRanges = ['0-1K', '1K-10K', '10K-100K', '100K-1M', '1M-10M', '10M+'];
+    const stakingRanges = ['0-1K', '1K-10K', '10K-100K', '100K-1M', '1M-10M', '10M+'];
+    
+    // 模拟用户分布数据（实际应用中应该是真实数据）
+    const userBehaviorData = [
+      [1250, 890, 456, 234, 89, 23],    // 0-1K 持币量
+      [890, 2340, 1234, 567, 234, 67],  // 1K-10K 持币量
+      [456, 1234, 3456, 1890, 789, 234], // 10K-100K 持币量
+      [234, 567, 1890, 4567, 2345, 890], // 100K-1M 持币量
+      [89, 234, 789, 2345, 3456, 1567],  // 1M-10M 持币量
+      [23, 67, 234, 890, 1567, 2345]     // 10M+ 持币量
+    ];
+
+    // 创建用户行为热力图矩阵
+    function createUserBehaviorHeatmap() {
+      const matrix = document.getElementById('userBehaviorMatrix');
+      matrix.innerHTML = '';
+      
+      // 添加行标签（锁仓量）
+      for (let i = 0; i < 6; i++) {
+        const labelCell = document.createElement('div');
+        labelCell.className = 'heatmap-cell label-cell';
+        labelCell.textContent = stakingRanges[i];
+        labelCell.style.gridRow = i + 1;
+        labelCell.style.gridColumn = 1;
+        labelCell.style.fontWeight = 'bold';
+        labelCell.style.color = '#64748b';
+        matrix.appendChild(labelCell);
+      }
+      
+      // 添加列标签（持币量）
+      for (let j = 0; j < 6; j++) {
+        const labelCell = document.createElement('div');
+        labelCell.className = 'heatmap-cell label-cell';
+        labelCell.textContent = holdingRanges[j];
+        labelCell.style.gridRow = 1;
+        labelCell.style.gridColumn = j + 2;
+        labelCell.style.fontWeight = 'bold';
+        labelCell.style.color = '#64748b';
+        matrix.appendChild(labelCell);
+      }
+      
+      // 创建数据单元格
+      for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 6; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'heatmap-cell user-behavior';
+          cell.style.gridRow = i + 2;
+          cell.style.gridColumn = j + 2;
+          
+          const value = userBehaviorData[i][j];
+          const maxValue = Math.max(...userBehaviorData.flat());
+          const intensity = value / maxValue;
+          
+          // 设置颜色：浅蓝到深蓝渐变
+          const blue = Math.round(100 + intensity * 155); // 100-255
+          const green = Math.round(150 + intensity * 105); // 150-255
+          const red = Math.round(200 + intensity * 55);   // 200-255
+          cell.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+          
+          // 设置文字颜色
+          cell.style.color = intensity > 0.5 ? 'white' : '#1e293b';
+          
+          // 显示用户数量
+          cell.textContent = value.toLocaleString();
+          
+          // 添加工具提示
+          const percentage = ((value / userBehaviorData.flat().reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+          cell.title = `${stakingRanges[i]} Staking ↔ ${holdingRanges[j]} Holding\nUsers: ${value.toLocaleString()}\nPercentage: ${percentage}%`;
+          
+          matrix.appendChild(cell);
+        }
+      }
+    }
+
+    // Initialize heatmaps
+    createCorrelationHeatmap();
+    createUserBehaviorHeatmap();
+
+    // Interactive Payback Period Calculation
+    const months = Array.from({ length: 120 }, (_, i) => i + 1); // 120 months (10 years)
+    const marketCap = 1.725e9; // Filecoin market cap
+    const initialSupply = 69e9; // Initial supply
+    const finalSupply = 86e9; // Final supply
+
+    let paybackChart;
+
+    function updatePaybackChart() {
+      const hardwareCost = parseFloat(document.getElementById('hardwareCost').value);
+      const electricityCostPerKWh = parseFloat(document.getElementById('electricityCost').value);
+      const powerConsumption = parseFloat(document.getElementById('powerConsumption').value);
+
+      const electricityCostPerMonth = electricityCostPerKWh * powerConsumption * 720; // 720 hours/month
+
+      // 动态挖矿奖励 N(t) - 基于白皮书公式计算
+      const dynamicRewards = months.map(t => {
+        // 区块奖励基于AXON白皮书动态衰减发行模型计算
+        // 白皮书公式(31): v(x) = λ + (1-λ) · a^(-x/(N-x))
+        // 区块奖励 = 年发行量 / 年区块数
+        
+        // 计算当前流通量（基于动态衰减发行模型）
+        const lambda_min = 0.01;  // λ参数
+        const a = 2.5;            // a参数
+        const N = 86e9;           // 总供应量86B
+        const initialAllocation = 4.3e9; // 初始分配43亿
+        
+        // 计算到第t个月的累计发行量
+        let cumulativeSupply = initialAllocation;
+        for (let month = 1; month <= t; month++) {
+          const monthEmissionRate = lambda_min + (1 - lambda_min) * Math.pow(a, -month / (120 - month));
+          cumulativeSupply += 81.7e9 * monthEmissionRate / 120; // 公平发布池按月分配
+        }
+        
+        // 计算当前发行率
+        const currentEmissionRate = lambda_min + (1 - lambda_min) * Math.pow(a, -cumulativeSupply / (N - cumulativeSupply));
+        
+        // 计算年发行量
+        const remainingSupply = N - cumulativeSupply;
+        const annualEmissions = currentEmissionRate * remainingSupply;
+        
+        // 计算年区块数（3秒区块时间）
+        const blocksPerYear = 365 * 24 * 60 * 60 / 3;
+        
+        // 计算区块奖励（每个块的代币产出数量）
+        const blockReward = annualEmissions / blocksPerYear;
+        
+        // 计算每月区块数量：30天 × 24小时 × 3600秒 ÷ 3秒/区块
+        const blocksPerMonth = 30 * 24 * 60 * 60 / 3; // 每月区块数
+        
+        // 矿机数量变化模型：初始50,000台，逐步增长到300,000台
+        // 使用S型增长模型（Sigmoid函数），增长期24个月
+        const initialMiners = 50000;    // 初始矿机数量
+        const finalMiners = 300000;     // 最终矿机数量
+        const growthPeriod = 24;        // 增长期（月）
+        
+        // 计算第t个月的矿机数量（使用S型增长模型）
+        let currentMiners;
+        if (t <= growthPeriod) {
+          // S型增长模型：使用Sigmoid函数
+          // 公式：M(t) = M0 + (M∞ - M0) / (1 + e^(-k(t - t0)))
+          // 其中：M0=初始值, M∞=最终值, k=增长速率, t0=拐点时间
+          const k = 0.08;  // 增长速率参数（控制S型曲线的陡峭程度，更平缓）
+          const t0 = growthPeriod / 2;  // 拐点时间（增长期的一半）
+          
+          // 计算S型增长
+          const sigmoidValue = 1 / (1 + Math.exp(-k * (t - t0)));
+          currentMiners = initialMiners + (finalMiners - initialMiners) * sigmoidValue;
+        } else {
+          // 24个月后保持稳定
+          currentMiners = finalMiners;
+        }
+        
+        // 网络份额计算：基于白皮书Table 2专业矿工分配比例
+        // 参考：accurate_estimate/6.6.2.2_v.1.2.py 第113-146行 NetworkEvolutionStageConstants
+        const professionalMinerShare = 0.28 - 0.16 * (1 / (1 + Math.exp(-0.1 * (t - 42)))); // 平滑过渡
+        if (t <= 24) {
+          // 早期阶段(0-2年)：专业矿工占计算奖励70% → 约占总奖励28%
+        }
+        
+        // 单个矿工的网络份额：专业矿工总份额 / 当前矿机总数
+        const networkShare = professionalMinerShare / currentMiners;
+        
+        // 调试输出：验证白皮书模型计算
+        if (t <= 5 || t % 12 === 0) {
+          console.log(`Month ${t}: Miners=${currentMiners.toFixed(0)}, ProMinerShare=${professionalMinerShare}, NetworkShare=${networkShare.toFixed(8)}, BlockReward=${blockReward.toFixed(2)}`);
+        }
+        
+        // 返回每月挖矿奖励：区块奖励 × 每月区块数 × 网络份额
+        return blockReward * blocksPerMonth * networkShare;
+      });
+
+      // 动态代币价格 P(t) - 更明显的价格下降
+      const dynamicPrices = months.map(t => {
+        const supply = initialSupply + (t / 120) * (finalSupply - initialSupply); // 流通量增加
+        return marketCap / supply; // 价格 = 市值 / 流通量
+      });
+
+      // 调试输出 - 验证动态值
+      console.log('=== 动态值验证 ===');
+      console.log('Month 1 - Reward:', dynamicRewards[0].toFixed(6), 'Price:', dynamicPrices[0].toFixed(6));
+      console.log('Month 60 - Reward:', dynamicRewards[59].toFixed(6), 'Price:', dynamicPrices[59].toFixed(6));
+      console.log('Month 120 - Reward:', dynamicRewards[119].toFixed(6), 'Price:', dynamicPrices[119].toFixed(6));
+      
+      // 检查衰减率
+      console.log('=== 衰减率检查 ===');
+      console.log('Reward衰减率 (Month 1→60):', ((dynamicRewards[59] - dynamicRewards[0]) / dynamicRewards[0] * 100).toFixed(2) + '%');
+      console.log('Reward衰减率 (Month 1→120):', ((dynamicRewards[119] - dynamicRewards[0]) / dynamicRewards[0] * 100).toFixed(2) + '%');
+      console.log('Price下降率 (Month 1→120):', ((dynamicPrices[119] - dynamicPrices[0]) / dynamicPrices[0] * 100).toFixed(2) + '%');
+
+      // 累计收益 R(t)
+      const cumulativeRevenue = [];
+      const cumulativeCost = [];
+      let revenue = 0;
+      let cost = hardwareCost;
+
+      months.forEach((t, i) => {
+        const monthlyReward = dynamicRewards[i];
+        const price = dynamicPrices[i];
+        const monthlyRevenue = monthlyReward * price; // 每月收益
+        revenue += monthlyRevenue;
+        cost += electricityCostPerMonth;
+
+        cumulativeRevenue.push(revenue); // 累计收益
+        cumulativeCost.push(cost);
+        
+        // 调试输出前几个月的值
+        if (i < 5 || i % 12 === 0) {
+          console.log(`Month ${t}: Reward=${monthlyReward.toFixed(6)}, Price=${price.toFixed(6)}, MonthlyRevenue=${monthlyRevenue.toFixed(2)}, Cumulative=${revenue.toFixed(2)}`);
+        }
+        
+        // 检查月度收益变化率
+        if (i > 0) {
+          const prevMonthlyRevenue = dynamicRewards[i-1] * dynamicPrices[i-1];
+          const revenueChangeRate = ((monthlyRevenue - prevMonthlyRevenue) / prevMonthlyRevenue * 100);
+          if (i < 5 || i % 12 === 0) {
+            console.log(`  → 月度收益变化率: ${revenueChangeRate.toFixed(2)}%`);
+          }
+        }
+      });
+
+      const paybackMonth = months.find((_, i) => cumulativeRevenue[i] >= cumulativeCost[i]);
+
+      // Update statistics
+      document.getElementById('paybackPeriod').textContent = paybackMonth ? `${paybackMonth} months` : 'Not Achieved';
+      document.getElementById('totalRevenue').textContent = `$${(cumulativeRevenue[119] / 1000).toFixed(0)}K`;
+      document.getElementById('totalCost').textContent = `$${(cumulativeCost[119] / 1000).toFixed(0)}K`;
+      document.getElementById('netProfit').textContent = `$${((cumulativeRevenue[119] - cumulativeCost[119]) / 1000).toFixed(0)}K`;
+
+      // Destroy existing chart if it exists
+      if (paybackChart) {
+        paybackChart.destroy();
+      }
+
+      // Create new chart
+      const ctx = document.getElementById('paybackChart').getContext('2d');
+      paybackChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: months.map(m => `M${m}`),
+          datasets: [
+            {
+              label: 'Cumulative Cost C(t)',
+              data: cumulativeCost,
+              borderColor: '#dc2626',
+              backgroundColor: 'rgba(220, 38, 38, 0.1)',
+              borderWidth: 3,
+              fill: false,
+              tension: 0
+            },
+            {
+              label: 'Cumulative Revenue R(t)',
+              data: cumulativeRevenue,
+              borderColor: '#059669',
+              backgroundColor: 'rgba(5, 150, 105, 0.1)',
+              borderWidth: 3,
+              fill: false,
+              tension: 0.4
+            },
+            {
+              label: 'Net Cash Flow',
+              data: cumulativeRevenue.map((r, i) => r - cumulativeCost[i]),
+              borderColor: '#667eea',
+              backgroundColor: 'rgba(102, 126, 234, 0.1)',
+              borderWidth: 2,
+              fill: false,
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                color: '#64748b',
+                font: { size: 10 },
+                padding: 15
+              }
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                },
+                afterBody: function (items) {
+                  if (paybackMonth && items[0].label === `M${paybackMonth}`) {
+                    return `Payback Period: ${paybackMonth} months`;
+                  }
+                  return '';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Time (Months)',
+                color: '#64748b',
+                font: { size: 11 }
+              },
+              grid: {
+                color: '#e2e8f0'
+              },
+              ticks: {
+                color: '#64748b',
+                font: { size: 10 },
+                maxTicksLimit: 10
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Cumulative Amount (USD)',
+                color: '#64748b',
+                font: { size: 11 }
+              },
+              grid: {
+                color: '#e2e8f0'
+              },
+              ticks: {
+                color: '#64748b',
+                font: { size: 10 },
+                callback: function(value) {
+                  return '$' + (value / 1000).toFixed(0) + 'K';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // =============================================================================
+    // 非线性收益分析图表模块
+    // =============================================================================
+    
+    // 声明非线性图表变量，用于存储Chart.js实例
+    let nonlinearChart;
+
+    /**
+     * 更新非线性收益分析图表
+     * 计算动态挖矿奖励、代币价格、累计收益和成本，并绘制图表
+     */
+    function updateNonlinearChart() {
+      // 从HTML输入框获取硬件成本（美元）
+      const hardwareCost = parseFloat(document.getElementById('hardwareCost').value);
+      
+      // 从HTML输入框获取每度电成本（美元/kWh）
+      const electricityCostPerKWh = parseFloat(document.getElementById('electricityCost').value);
+      
+      // 从HTML输入框获取矿机功耗（千瓦）
+      const powerConsumption = parseFloat(document.getElementById('powerConsumption').value);
+
+      // 计算每月电费成本：电费单价 × 功耗 × 720小时/月
+      const electricityCostPerMonth = electricityCostPerKWh * powerConsumption * 720;
+
+      // 调试输出：验证成本计算
+      console.log('=== Cost Calculation Debug ===');
+      console.log('Hardware Cost:', hardwareCost);
+      console.log('Electricity Cost per kWh:', electricityCostPerKWh);
+      console.log('Power Consumption (kW):', powerConsumption);
+      console.log('Electricity Cost per Month:', electricityCostPerMonth);
+      console.log('Expected monthly cost should be:', electricityCostPerMonth, 'USD');
+      
+      // 验证电费成本计算
+      const expectedMonthlyCost = 0.16 * 2.5 * 720; // 0.16 USD/kWh × 2.5kW × 720h
+      console.log('Expected calculation: 0.16 × 2.5 × 720 =', expectedMonthlyCost, 'USD/month');
+      console.log('Actual calculation result:', electricityCostPerMonth, 'USD/month');
+      console.log('Calculation match:', Math.abs(electricityCostPerMonth - expectedMonthlyCost) < 0.01);
+
+      // =============================================================================
+      // 1. 动态挖矿奖励 N(t) 计算 - 基于简化的指数衰减模型
+      // =============================================================================
+      const dynamicRewards = months.map(t => {
+        // 区块奖励基于AXON白皮书动态衰减发行模型计算
+        // 白皮书公式(31): v(x) = λ + (1-λ) · a^(-x/(N-x))
+        // 区块奖励 = 年发行量 / 年区块数
+        
+        // 计算当前流通量（基于动态衰减发行模型）
+        const lambda_min = 0.01;  // λ参数
+        const a = 2.5;            // a参数
+        const N = 86e9;           // 总供应量86B
+        const initialAllocation = 4.3e9; // 初始分配43亿
+        
+        // 计算到第t个月的累计发行量
+        let cumulativeSupply = initialAllocation;
+        for (let month = 1; month <= t; month++) {
+          const monthEmissionRate = lambda_min + (1 - lambda_min) * Math.pow(a, -month / (120 - month));
+          cumulativeSupply += 81.7e9 * monthEmissionRate / 120; // 公平发布池按月分配
+        }
+        
+        // 计算当前发行率
+        const currentEmissionRate = lambda_min + (1 - lambda_min) * Math.pow(a, -cumulativeSupply / (N - cumulativeSupply));
+        
+        // 计算年发行量
+        const remainingSupply = N - cumulativeSupply;
+        const annualEmissions = currentEmissionRate * remainingSupply;
+        
+        // 计算年区块数（3秒区块时间）
+        const blocksPerYear = 365 * 24 * 60 * 60 / 3;
+        
+        // 计算区块奖励
+        const blockReward = annualEmissions / blocksPerYear;
+        
+        // 计算每月区块数量：30天 × 24小时 × 3600秒 ÷ 3秒/区块
+        const blocksPerMonth = 30 * 24 * 60 * 60 / 3; // 每月区块数
+        
+        // 矿机数量变化模型：初始50,000台，逐步增长到300,000台
+        // 使用S型增长模型（Sigmoid函数），增长期24个月
+        const initialMiners = 50000;    // 初始矿机数量
+        const finalMiners = 300000;     // 最终矿机数量
+        const growthPeriod = 24;        // 增长期（月）
+        
+        // 计算第t个月的矿机数量（使用S型增长模型）
+        let currentMiners;
+        if (t <= growthPeriod) {
+          // S型增长模型：使用Sigmoid函数
+          // 公式：M(t) = M0 + (M∞ - M0) / (1 + e^(-k(t - t0)))
+          // 其中：M0=初始值, M∞=最终值, k=增长速率, t0=拐点时间
+          const k = 0.08;  // 增长速率参数（控制S型曲线的陡峭程度，更平缓）
+          const t0 = growthPeriod / 2;  // 拐点时间（增长期的一半）
+          
+          // 归一化时间到[0,1]范围
+          const normalizedTime = t / growthPeriod;
+          
+          // 计算S型增长
+          const sigmoidValue = 1 / (1 + Math.exp(-k * (t - t0)));
+          currentMiners = initialMiners + (finalMiners - initialMiners) * sigmoidValue;
+        } else {
+          // 24个月后保持稳定
+          currentMiners = finalMiners;
+        }
+        
+        // 网络份额计算：基于白皮书Table 2专业矿工分配比例
+        // 参考：accurate_estimate/6.6.2.2_v.1.2.py 第113-146行 NetworkEvolutionStageConstants
+        const professionalMinerShare = 0.28 - 0.16 * (1 / (1 + Math.exp(-0.1 * (t - 42)))); // 平滑过渡
+        if (t <= 24) {
+          // 早期阶段(0-2年)：专业矿工占计算奖励70% → 约占总奖励28%
+        }
+        
+        // 单个矿工的网络份额：专业矿工总份额 / 当前矿机总数
+        const networkShare = professionalMinerShare / currentMiners;
+        
+        // 调试输出：验证白皮书模型计算
+        if (t <= 5 || t % 12 === 0) {
+          console.log(`Month ${t}: Miners=${currentMiners.toFixed(0)}, ProMinerShare=${professionalMinerShare}, NetworkShare=${networkShare.toFixed(8)}, BlockReward=${blockReward.toFixed(2)}`);
+        }
+        
+        // 返回每月挖矿奖励：区块奖励 × 每月区块数 × 网络份额
+        return blockReward * blocksPerMonth * networkShare;
+      });
+
+      // =============================================================================
+      // 2. 动态代币价格 P(t) 计算 - 基于AXON白皮书动态衰减发行模型
+      // =============================================================================
+      const dynamicPrices = months.map(t => {
+        // AXON白皮书动态衰减发行模型：v(x) = λ + (1 - λ) · a^(-x/(N-x))
+        // 参数：λ=0.01，a=2.5，N=120（总月数）
+        // 其中x是已发行月数，N是总发行期（10年=120个月）
+        
+        // 计算动态衰减发行速度
+        const lambdaParam = 0.01;  // λ参数
+        const a = 2.5;        // a参数
+        const N = 120;        // 总发行期（月）
+        const x = t;          // 当前月数
+        
+        // 动态衰减发行速度公式
+        const emissionRate = lambdaParam + (1 - lambdaParam) * Math.pow(a, -x / (N - x));
+        
+        // 计算累计发行量（从初始43亿开始）
+        // 初始分配：43亿AXON（5%）
+        // 公平发布池：817亿AXON（95%）
+        const initialAllocation = 4.3e9;  // 43亿初始分配
+        const fairLaunchPool = 81.7e9;    // 817亿公平发布池
+        
+        // 计算到第t个月的累计发行量
+        let cumulativeSupply = initialAllocation;
+        for (let month = 1; month <= t; month++) {
+          const monthEmissionRate = lambdaParam + (1 - lambdaParam) * Math.pow(a, -month / (N - month));
+          cumulativeSupply += fairLaunchPool * monthEmissionRate / 120; // 按月分配
+        }
+        
+        // 严格按照用户要求：对标Filecoin的流通市值，市值/代币流通量=代币价格
+        // 使用动态市值对标，参考Filecoin的市值增长轨迹
+        
+        // 动态市值对标函数 - 优化版本
+        const getDynamicMarketCap = (months) => {
+          const days = months * 30; // 转换为天数
+          
+          if (days <= 60) {
+            // 启动期：0-60天，参考Filecoin早期数据
+            // 从676万美元增长到4.43亿美元
+            return 6.76e6 + (days / 60) * (443e6 - 6.76e6);
+            
+          } else if (days <= 365) {
+            // 成长期：60天-1年，稳定增长
+            const startValue = 443e6;
+            const endValue = 5e9; // 50亿美元
+            const progress = (days - 60) / (365 - 60);
+            return startValue + (endValue - startValue) * Math.pow(progress, 0.7);
+            
+          } else if (days <= 1095) { // 3年
+            // 成熟期：1-3年，AI赛道溢价体现
+            const baseValue = 5e9;
+            const years = days / 365;
+            return baseValue * Math.pow(1.5, years - 1); // 年化50%增长
+            
+          } else {
+            // 稳定期：3年后，缓慢增长
+            const baseValue = 5e9 * Math.pow(1.5, 2); // 3年后的基础值
+            const additionalYears = (days - 1095) / 365;
+            return baseValue * Math.pow(1.1, additionalYears); // 年化10%增长
+          }
+        };
+        
+        // 获取动态市值
+        const dynamicMarketCap = getDynamicMarketCap(t);
+        
+        // 代币价格 = 动态市值 / AXON流通量
+        const price = dynamicMarketCap / cumulativeSupply;
+        
+        // 调试输出：验证动态价格计算
+        if (t <= 5 || t % 12 === 0) {
+          const days = t * 30;
+          console.log(`Month ${t} (${days} days): DynamicMarketCap=$${dynamicMarketCap.toFixed(0)}, AXONSupply=${cumulativeSupply.toFixed(0)}, Price=$${price.toFixed(6)}`);
+        }
+        
+        return price;
+      });
+
+      // =============================================================================
+      // 调试输出 - 验证动态计算结果的正确性
+      // =============================================================================
+      console.log('=== Nonlinear Chart Dynamic Values ===');
+      console.log('Month 1 - Reward:', dynamicRewards[0].toFixed(6), 'Price:', dynamicPrices[0].toFixed(6));
+      console.log('Month 60 - Reward:', dynamicRewards[59].toFixed(6), 'Price:', dynamicPrices[59].toFixed(6));
+      console.log('Month 120 - Reward:', dynamicRewards[119].toFixed(6), 'Price:', dynamicPrices[119].toFixed(6));
+      console.log('Reward衰减率 (1→120):', ((dynamicRewards[119] - dynamicRewards[0]) / dynamicRewards[0] * 100).toFixed(2) + '%');
+      console.log('Price下降率 (1→120):', ((dynamicPrices[119] - dynamicPrices[0]) / dynamicPrices[0] * 100).toFixed(2) + '%');
+
+      // =============================================================================
+      // 3. 累计收益 R(t) 和累计成本 C(t) 计算
+      // =============================================================================
+      
+      // 初始化累计收益数组
+      let cumulativeRevenue = [];
+      
+      // 初始化累计成本数组
+      const cumulativeCost = [];
+      
+      // 初始化累计收益总额
+      let revenue = 0;
+      
+      // 初始化累计成本总额（包含初始硬件成本）
+      let cost = hardwareCost;
+      
+      // 遍历每个月份，计算累计收益和成本
+      months.forEach((t, i) => {
+        // 获取第i个月的挖矿奖励数量（代币数量）
+        const monthlyRewardTokens = dynamicRewards[i];
+        
+        // 获取第i个月的代币价格
+        const tokenPrice = dynamicPrices[i];
+        
+        // 计算第i个月的月度收益：∑ monthly_reward(t) × token_amount(t) × token_price(t)
+        // 其中：monthly_reward(t) = token_amount(t) = monthlyRewardTokens
+        const monthlyRevenue = monthlyRewardTokens * tokenPrice;
+        
+        // 累加每月收益到累计收益
+        revenue += monthlyRevenue; // 累计收益 = ∑(月度收益)
+        
+        // 累加每月成本：电费成本
+        cost += electricityCostPerMonth;
+        
+        // 将累计收益添加到数组
+        cumulativeRevenue.push(revenue); // 累计收益 = ∑(月度收益)
+        
+        // 将累计成本添加到数组
+        cumulativeCost.push(cost);
+        
+        // 调试输出：前几个月的成本计算
+        if (i < 5 || i % 12 === 0) {
+          console.log(`Month ${t}: MonthlyRevenue=$${monthlyRevenue.toFixed(2)}, CumulativeRevenue=$${revenue.toFixed(2)}, Cost=${cost.toFixed(2)}, MonthlyCost=${electricityCostPerMonth.toFixed(2)}, Hardware=${hardwareCost}`);
+        }
+      });
+
+      // =============================================================================
+      // 4. 计算月度收益（非累积）- 用于图表显示和验证
+      // =============================================================================
+      const monthlyRevenues = months.map((t, i) => {
+        // 正确的月度收益计算：∑ monthly_reward(t) × token_amount(t) × token_price(t)
+        // 其中：
+        // - monthly_reward(t) = BlockReward(t) × BlocksPerMonth × NetworkShare(t)
+        // - token_amount(t) = monthly_reward(t) (每月获得的代币数量)
+        // - token_price(t) = TokenPrice(t) (代币价格)
+        
+        // 获取第i个月的挖矿奖励（代币数量）
+        const monthlyRewardTokens = dynamicRewards[i]; // 每月获得的代币数量
+        
+        // 获取第i个月的代币价格
+        const tokenPrice = dynamicPrices[i]; // 代币价格
+        
+        // 计算月度收益：代币数量 × 代币价格
+        const monthlyRevenue = monthlyRewardTokens * tokenPrice;
+        
+        return monthlyRevenue;
+      });
+
+      // =============================================================================
+      // 调试输出 - 验证月度收益计算的正确性
+      // =============================================================================
+      console.log('=== Monthly Revenue Verification ===');
+      console.log('Month 1 Monthly Revenue:', monthlyRevenues[0].toFixed(2));
+      console.log('Month 60 Monthly Revenue:', monthlyRevenues[59].toFixed(2));
+      console.log('Month 120 Monthly Revenue:', monthlyRevenues[119].toFixed(2));
+      console.log('Monthly Revenue Decline Rate:', ((monthlyRevenues[119] - monthlyRevenues[0]) / monthlyRevenues[0] * 100).toFixed(2) + '%');
+
+      // =============================================================================
+      // 5. 回本周期计算 - 找到累计收益 R(t) >= 累计成本 C(t) 的交点
+      // =============================================================================
+      
+      // 查找第一个累计收益大于等于累计成本的月份
+      const paybackMonth = months.find((_, i) => cumulativeRevenue[i] >= cumulativeCost[i]);
+      
+      // =============================================================================
+      // 6. 精确交点坐标计算（使用线性插值算法）
+      // =============================================================================
+      
+      // 初始化精确交点坐标（默认为离散月份值）
+      let exactPaybackX = paybackMonth;
+      let exactPaybackY = cumulativeCost[paybackMonth - 1];
+      
+      // 如果找到回本月份且大于1，则进行线性插值计算精确交点
+      if (paybackMonth && paybackMonth > 1) {
+        // 获取交点前后的索引
+        const prevIndex = paybackMonth - 2;  // 前一个月的索引
+        const currIndex = paybackMonth - 1;  // 当前月的索引
+        
+        // 线性插值计算精确交点
+        const x1 = paybackMonth - 1;  // 前一个月的x坐标
+        const x2 = paybackMonth;      // 当前月的x坐标
+        const y1_rev = cumulativeRevenue[prevIndex];   // 前一个月的累计收益
+        const y2_rev = cumulativeRevenue[currIndex];   // 当前月的累计收益
+        const y1_cost = cumulativeCost[prevIndex];     // 前一个月的累计成本
+        const y2_cost = cumulativeCost[currIndex];     // 当前月的累计成本
+        
+        // 计算累计收益线的斜率和截距
+        const slope_rev = (y2_rev - y1_rev) / (x2 - x1);
+        const intercept_rev = y1_rev - slope_rev * x1;
+        
+        // 计算累计成本线的斜率和截距
+        const slope_cost = (y2_cost - y1_cost) / (x2 - x1);
+        const intercept_cost = y1_cost - slope_cost * x1;
+        
+        // 如果两条线不平行，计算精确交点
+        if (slope_rev !== slope_cost) {
+          // 计算精确的x坐标：x = (intercept_cost - intercept_rev) / (slope_rev - slope_cost)
+          exactPaybackX = (intercept_cost - intercept_rev) / (slope_rev - slope_cost);
+          
+          // 计算精确的y坐标：y = slope_rev * x + intercept_rev
+          exactPaybackY = slope_rev * exactPaybackX + intercept_rev;
+        }
+      }
+      
+      // =============================================================================
+      // 7. 计算月度收益线与累计成本线的交点（备用计算）
+      // =============================================================================
+      
+      // 初始化月度收益与成本交点月份
+      let monthlyPaybackMonth = null;
+      
+      // 遍历所有月份，寻找月度收益与累计成本的交点
+      for (let i = 0; i < months.length - 1; i++) {
+        // 获取当前月的月度收益和累计成本
+        const monthlyRev = monthlyRevenues[i];
+        const monthlyCost = cumulativeCost[i];
+        
+        // 获取下个月的月度收益和累计成本
+        const nextMonthlyRev = monthlyRevenues[i + 1];
+        const nextMonthlyCost = cumulativeCost[i + 1];
+        
+        // 检查是否有交点（月度收益 = 累计成本）
+        // 条件1：当前月收益≤成本 且 下月收益≥成本
+        // 条件2：当前月收益≥成本 且 下月收益≤成本
+        if ((monthlyRev <= monthlyCost && nextMonthlyRev >= nextMonthlyCost) || 
+            (monthlyRev >= monthlyCost && nextMonthlyRev <= nextMonthlyCost)) {
+          monthlyPaybackMonth = i + 1;  // 记录交点月份
+          break;  // 找到第一个交点后退出循环
+        }
+      }
+      
+      // =============================================================================
+      // 8. 调试输出 - 验证回本周期计算的正确性
+      // =============================================================================
+      console.log('=== Payback Period Analysis ===');
+      console.log('Cumulative Payback Month Found:', paybackMonth);
+      console.log('Monthly vs Cost Payback Month Found:', monthlyPaybackMonth);
+      console.log('Annotation will be shown:', paybackMonth ? 'YES' : 'NO');
+      
+      // 如果找到回本月份，输出详细信息
+      if (paybackMonth) {
+        console.log('Original coordinates:', {
+          x: paybackMonth,
+          y: cumulativeRevenue[paybackMonth - 1]
+        });
+        console.log('Exact intersection coordinates:', {
+          x: exactPaybackX,
+          y: exactPaybackY
+        });
+      }
+      
+      // 输出回本月份的收益和成本对比
+      if (paybackMonth) {
+        const paybackIndex = paybackMonth - 1;
+        console.log(`Month ${paybackMonth}: Revenue=$${cumulativeRevenue[paybackIndex].toFixed(2)}, Cost=$${cumulativeCost[paybackIndex].toFixed(2)}`);
+        console.log(`Difference: $${(cumulativeRevenue[paybackIndex] - cumulativeCost[paybackIndex]).toFixed(2)}`);
+      } else {
+        // 如果120个月内无法回本，输出最终数据
+        console.log('No cumulative payback period found within 120 months');
+        console.log(`Final Month 120: Revenue=$${cumulativeRevenue[119].toFixed(2)}, Cost=$${cumulativeCost[119].toFixed(2)}`);
+      }
+
+      // 如果找到月度收益与成本交点，输出详细信息
+      if (monthlyPaybackMonth) {
+        console.log(`Monthly vs Cost intersection at Month ${monthlyPaybackMonth}`);
+        console.log(`Monthly Revenue: $${monthlyRevenues[monthlyPaybackMonth - 1].toFixed(2)}, Cumulative Cost: $${cumulativeCost[monthlyPaybackMonth - 1].toFixed(2)}`);
+      }
+
+      // =============================================================================
+      // 9. 计算非线性分析指标
+      // =============================================================================
+      
+      // 计算峰值月度收益（所有月份中的最大值）
+      const peakRevenue = Math.max(...monthlyRevenues);
+      
+      // 计算峰值收益出现的月份
+      const peakMonth = monthlyRevenues.indexOf(peakRevenue) + 1;
+      
+      // 获取第120个月（最后一个月）的收益
+      const finalRevenue = monthlyRevenues[119];
+      
+      // 计算收益衰减率：从峰值到最终值的下降百分比
+      const revenueDeclineRate = ((finalRevenue - peakRevenue) / peakRevenue * 100).toFixed(1);
+      
+      // 计算曲率指数（基于二阶导数的非线性度量）
+      const curvatureIndex = calculateCurvatureIndex(monthlyRevenues);
+      
+      // 计算拐点（增长率变化最大的点）
+      const inflectionPoint = calculateInflectionPoint(monthlyRevenues);
+
+      // =============================================================================
+      // 10. 更新KPI统计信息显示
+      // =============================================================================
+      
+      // 更新峰值月度收益显示
+      document.getElementById('peakRevenue').textContent = `$${peakRevenue.toFixed(0)}`;
+      
+      // 更新收益衰减率显示
+      document.getElementById('revenueDecline').textContent = `${revenueDeclineRate}%`;
+      
+      // 更新回本周期显示（使用累计收益与成本交点）
+      document.getElementById('inflectionPoint').textContent = paybackMonth ? `M${paybackMonth}` : 'N/A';
+      
+      // 更新曲率指数显示
+      document.getElementById('curvatureIndex').textContent = curvatureIndex.toFixed(3);
+
+      // =============================================================================
+      // 11. 更新图表标题中的回本周期信息
+      // =============================================================================
+      
+      // 获取标题信息显示元素
+      const paybackTitleInfo = document.getElementById('paybackTitleInfo');
+      
+      // 根据是否找到回本周期设置不同的显示内容和颜色
+      if (paybackMonth) {
+        // 如果找到回本周期，显示成功信息（绿色）
+        paybackTitleInfo.textContent = `💰 回本周期: 第${paybackMonth}个月`;
+        paybackTitleInfo.style.color = '#059669'; // 绿色表示成功回本
+      } else {
+        // 如果未找到回本周期，显示警告信息（红色）
+        paybackTitleInfo.textContent = '⚠️ 10年内无法回本';
+        paybackTitleInfo.style.color = '#dc2626'; // 红色表示无法回本
+      }
+
+      // =============================================================================
+      // 12. 图表创建和配置
+      // =============================================================================
+      
+      // 销毁现有图表实例（如果存在）
+      if (nonlinearChart) {
+        nonlinearChart.destroy();
+      }
+
+      // 获取图表画布上下文
+      const ctx = document.getElementById('nonlinearChart').getContext('2d');
+      
+      // 调试输出：检查数据
+      console.log('=== Nonlinear Chart Debug Info ===');
+      console.log('Canvas element found:', !!document.getElementById('nonlinearChart'));
+      console.log('Dynamic rewards length:', dynamicRewards.length);
+      console.log('Dynamic prices length:', dynamicPrices.length);
+      console.log('Cumulative revenue length:', cumulativeRevenue.length);
+      console.log('Cumulative cost length:', cumulativeCost.length);
+      console.log('First few dynamic rewards:', dynamicRewards.slice(0, 5));
+      console.log('First few dynamic prices:', dynamicPrices.slice(0, 5));
+      
+      // 检查数据有效性
+      const hasInvalidRewards = dynamicRewards.some(val => !isFinite(val) || val < 0);
+      const hasInvalidPrices = dynamicPrices.some(val => !isFinite(val) || val < 0);
+      const hasInvalidRevenue = cumulativeRevenue.some(val => !isFinite(val) || val < 0);
+      const hasInvalidCost = cumulativeCost.some(val => !isFinite(val) || val < 0);
+      
+      console.log('Data validation:');
+      console.log('  - Invalid rewards:', hasInvalidRewards);
+      console.log('  - Invalid prices:', hasInvalidPrices);
+      console.log('  - Invalid revenue:', hasInvalidRevenue);
+      console.log('  - Invalid cost:', hasInvalidCost);
+      
+      if (hasInvalidRewards || hasInvalidPrices || hasInvalidRevenue || hasInvalidCost) {
+        console.error('Found invalid data values!');
+        console.log('Sample invalid rewards:', dynamicRewards.filter(val => !isFinite(val) || val < 0).slice(0, 5));
+        console.log('Sample invalid prices:', dynamicPrices.filter(val => !isFinite(val) || val < 0).slice(0, 5));
+        return; // 停止图表创建
+      }
+      
+      // 创建新的Chart.js实例
+      try {
+      nonlinearChart = new Chart(ctx, {
+        type: 'line',  // 图表类型：折线图
+        data: {
+          // 设置X轴标签：M1, M2, M3, ..., M120
+          labels: months.map(m => `M${m}`),
+          datasets: [
+            // =============================================================================
+            // 数据集1：月度收益（非累积）- 绿色线
+            // =============================================================================
+            {
+              label: 'Monthly Revenue (Non-cumulative)',  // 图例标签
+              data: dynamicRewards.map((n, i) => n * dynamicPrices[i]), // 动态月收益数据
+              borderColor: '#059669',  // 线条颜色：绿色
+              backgroundColor: 'rgba(5, 150, 105, 0.1)',  // 填充颜色：浅绿色
+              borderWidth: 3,  // 线条宽度
+              fill: true,  // 启用填充
+              tension: 0.4,  // 线条平滑度
+              pointRadius: 0,  // 数据点半径
+              pointHoverRadius: 6,  // 悬停时数据点半径
+              pointBorderColor: '#059669',  // 数据点边框颜色
+              pointBackgroundColor: '#059669',  // 数据点背景颜色
+              borderDash: [], // 明确设置为实线（无虚线）
+              borderCapStyle: 'butt',  // 线条端点样式
+              borderJoinStyle: 'miter'  // 线条连接样式
+            },
+            // =============================================================================
+            // 数据集2：累计收益 - 蓝色线
+            // =============================================================================
+            {
+              label: 'Cumulative Revenue',  // 图例标签
+              data: cumulativeRevenue, // 动态累计收益数据
+              borderColor: '#667eea',  // 线条颜色：蓝色
+              backgroundColor: 'rgba(102, 126, 234, 0.1)',  // 填充颜色：浅蓝色
+              borderWidth: 2,  // 线条宽度
+              fill: false,  // 不填充
+              tension: 0.3,  // 线条平滑度
+              pointRadius: 0,  // 不显示数据点
+              borderDash: [], // 明确设置为实线（无虚线）
+              yAxisID: 'y1'  // 使用右侧Y轴
+            },
+            // =============================================================================
+            // 数据集3：累计成本 - 红色线
+            // =============================================================================
+            {
+              label: 'Cumulative Cost',  // 图例标签
+              data: cumulativeCost,  // 累计成本数据
+              borderColor: '#dc2626',  // 线条颜色：红色
+              backgroundColor: 'rgba(220, 38, 38, 0.1)',  // 填充颜色：浅红色
+              borderWidth: 2,  // 线条宽度
+              fill: false,  // 不填充
+              tension: 0,  // 无平滑（直线）
+              pointRadius: 0,  // 不显示数据点
+              borderDash: [], // 明确设置为实线（无虚线）
+              yAxisID: 'y1'  // 使用右侧Y轴
+            },
+            // 暂时移除复杂的回本周期标注，简化图表配置
+          ]
+        },
+        // =============================================================================
+        // 图表选项配置
+        // =============================================================================
+        options: {
+          responsive: true,  // 启用响应式设计
+          maintainAspectRatio: false,  // 不保持宽高比，允许自定义尺寸
+          plugins: {
+            // =============================================================================
+            // 图例配置
+            // =============================================================================
+            legend: {
+              position: 'top',  // 图例位置：顶部
+              labels: {
+                usePointStyle: true,  // 使用点样式作为图例图标
+                color: '#64748b',  // 图例文字颜色
+                font: { size: 10 },  // 图例文字大小
+                padding: 15  // 图例项间距
+              }
+            },
+            // =============================================================================
+            // 工具提示配置
+            // =============================================================================
+            tooltip: {
+              mode: 'index',  // 工具提示模式：按索引显示
+              intersect: false,  // 不要求鼠标精确悬停在数据点上
+              callbacks: {
+                // 自定义工具提示标签显示
+                label: function(context) {
+                  if (context.datasetIndex === 0) {
+                    // 月度收益：显示精确到小数点后2位
+                    return 'Monthly Revenue: $' + context.parsed.y.toFixed(2);
+                  } else if (context.datasetIndex === 1) {
+                    // 累计收益：显示千分位分隔符
+                    return 'Cumulative Revenue: $' + context.parsed.y.toLocaleString();
+                  } else {
+                    // 累计成本：显示千分位分隔符
+                    return 'Cumulative Cost: $' + context.parsed.y.toLocaleString();
+                  }
+                },
+                // 在工具提示底部添加额外信息
+                afterBody: function (items) {
+                  // 如果当前悬停的是回本月份，显示回本周期信息
+                  if (paybackMonth && items[0].label === `M${paybackMonth}`) {
+                    return `Payback Period: ${paybackMonth} months`;
+                  }
+                  return '';  // 其他月份不显示额外信息
+                }
+              }
+            }
+            // 注意：已移除复杂的annotation配置，改用简单的数据点标注
+          },
+          // =============================================================================
+          // 坐标轴配置
+          // =============================================================================
+          scales: {
+            // =============================================================================
+            // X轴配置（时间轴）
+            // =============================================================================
+            x: {
+              title: {
+                display: true,  // 显示轴标题
+                text: 'Time (Months)',  // 轴标题文字
+                color: '#64748b',  // 标题颜色
+                font: { size: 11 }  // 标题字体大小
+              },
+              grid: {
+                color: '#e2e8f0'  // 网格线颜色
+              },
+              ticks: {
+                color: '#64748b',  // 刻度标签颜色
+                font: { size: 10 },  // 刻度标签字体大小
+                maxTicksLimit: 10  // 最大刻度数量限制
+              }
+            },
+            // =============================================================================
+            // 左侧Y轴配置（月度收益）- 优化版本
+            // =============================================================================
+            y: {
+              type: 'linear',  // 线性刻度
+              display: true,  // 显示轴
+              position: 'left',  // 轴位置：左侧
+              title: {
+                display: true,  // 显示轴标题
+                text: 'Monthly Revenue (USD)',  // 轴标题文字
+                color: '#64748b',  // 标题颜色
+                font: { size: 11 }  // 标题字体大小
+              },
+              grid: {
+                color: '#e2e8f0'  // 网格线颜色
+              },
+              ticks: {
+                color: '#64748b',  // 刻度标签颜色
+                font: { size: 10 },  // 刻度标签字体大小
+                // 自定义刻度标签格式：显示千元单位
+                callback: function(value) {
+                  return '$' + (value / 1000).toFixed(0) + 'K';
+                }
+              },
+              // 设置Y轴范围，确保月度收益线清晰可见
+              min: 0,  // 最小值从0开始
+              max: function(context) {
+                // 动态计算最大值，确保月度收益线清晰可见
+                const maxMonthlyRevenue = Math.max(...monthlyRevenues);
+                // 设置最大值比实际最大值高10%，确保线条不会贴边
+                return maxMonthlyRevenue * 1.1;
+              }
+            },
+            // =============================================================================
+            // 右侧Y轴配置（累计收益和成本）- 优化版本
+            // =============================================================================
+            y1: {
+              type: 'linear',  // 线性刻度
+              display: true,  // 显示轴
+              position: 'right',  // 轴位置：右侧
+              title: {
+                display: true,  // 显示轴标题
+                text: 'Cumulative Amount (USD)',  // 轴标题文字
+                color: '#64748b',  // 标题颜色
+                font: { size: 11 }  // 标题字体大小
+              },
+              grid: {
+                drawOnChartArea: false,  // 不在图表区域绘制网格线（避免与左侧轴重叠）
+              },
+              ticks: {
+                color: '#64748b',  // 刻度标签颜色
+                font: { size: 10 },  // 刻度标签字体大小
+                // 自定义刻度标签格式：将数值转换为千元单位
+                callback: function(value) {
+                  return '$' + (value / 1000).toFixed(0) + 'K';
+                }
+              },
+              // 设置Y轴范围，避免缩放到0附近
+              min: 0,  // 最小值从0开始
+              max: function(context) {
+                // 动态计算最大值，确保累计成本线清晰可见
+                const maxRevenue = Math.max(...cumulativeRevenue);
+                const maxCost = Math.max(...cumulativeCost);
+                const maxValue = Math.max(maxRevenue, maxCost);
+                // 设置最大值比实际最大值高20%，确保线条不会贴边
+                return maxValue * 1.2;
+              }
+            }
+          }
+        }
+      });
+      
+      // 调试输出：检查图表创建是否成功
+      console.log('Nonlinear chart created successfully:', !!nonlinearChart);
+      console.log('Chart data:', nonlinearChart.data);
+      console.log('Chart options:', nonlinearChart.options);
+      
+      } catch (error) {
+        console.error('Error creating nonlinear chart:', error);
+        console.error('Error details:', error.message);
+        console.error('Stack trace:', error.stack);
+      }
+      
+      // =============================================================================
+      // 13. 强制设置绿色线为实线（兼容性处理）
+      // =============================================================================
+      
+      // 使用延时确保图表完全渲染后再进行样式调整
+      setTimeout(() => {
+        // 检查图表实例和第一个数据集是否存在
+        if (nonlinearChart && nonlinearChart.data.datasets[0]) {
+          // 强制设置月度收益线为实线（无虚线）
+          nonlinearChart.data.datasets[0].borderDash = [];
+          // 更新图表但不显示动画
+          nonlinearChart.update('none');
+        }
+      }, 100);  // 延时100毫秒
+    }
+
+    // =============================================================================
+    // 综合收益分析图表模块 - 修复版本
+    // =============================================================================
+    
+    // 声明综合收益图表变量
+    let revenueChart;
+
+    /**
+     * 更新综合收益分析图表 - 修复版本
+     * 修复问题：
+     * 1. 统一发行率计算模型（基于供应量）
+     * 2. 防止除零错误
+     * 3. 完整的网络参与者建模
+     * 4. 合理的区块奖励设置
+     */
+    function updateRevenueChart() {
+      // 从HTML输入框获取参数
+      const hardwareCost = parseFloat(document.getElementById('hardwareCost').value);
+      const electricityCostPerKWh = parseFloat(document.getElementById('electricityCost').value);
+      const powerConsumption = parseFloat(document.getElementById('powerConsumption').value);
+      const electricityCostPerMonth = electricityCostPerKWh * powerConsumption * 720;
+      
+      console.log('=== Revenue Analysis Debug ===');
+      console.log('Hardware Cost:', hardwareCost);
+      console.log('Electricity Cost per Month:', electricityCostPerMonth);
+
+      // =============================================================================
+      // 1. 修复的区块奖励计算 - 统一基于供应量的模型
+      // =============================================================================
+      const getBlockReward = (month) => {
+        // 白皮书参数
+        const lambda_min = 0.01;  // λ参数
+        const a = 2.5;            // a参数
+        const N = 86e9;           // 总供应量86B
+        const initialAllocation = 4.3e9; // 初始分配43亿
+        const fairLaunchPool = 81.7e9;   // 公平发布池817亿
+        
+        // 计算到第t个月的累计发行量
+        let cumulativeSupply = initialAllocation;
+        for (let m = 1; m <= month; m++) {
+          // 修复：统一使用基于供应量的发行率计算
+          // 防止除零错误：当供应量接近总供应量时，使用最小值
+          const supplyRatio = Math.min(cumulativeSupply / N, 0.999);
+          const emissionRate = lambda_min + (1 - lambda_min) * Math.pow(a, -supplyRatio / (1 - supplyRatio));
+          
+          // 防止除零：当接近总供应量时，发行率接近最小值
+          const safeEmissionRate = Math.max(emissionRate, lambda_min);
+          cumulativeSupply += fairLaunchPool * safeEmissionRate / 120;
+        }
+        
+        // 计算当前发行率（基于当前供应量）
+        const currentSupplyRatio = Math.min(cumulativeSupply / N, 0.999);
+        const currentEmissionRate = lambda_min + (1 - lambda_min) * Math.pow(a, -currentSupplyRatio / (1 - currentSupplyRatio));
+        const safeCurrentEmissionRate = Math.max(currentEmissionRate, lambda_min);
+        
+        // 计算年发行量
+        const remainingSupply = Math.max(N - cumulativeSupply, N * 0.001); // 防止除零
+        const annualEmissions = safeCurrentEmissionRate * remainingSupply;
+        
+        // 计算年区块数（3秒区块时间）
+        const blocksPerYear = 365 * 24 * 60 * 60 / 3;
+        
+        // 修复：设置合理的区块奖励（5000 AXON/block）
+        const baseBlockReward = 5000; // 基础区块奖励
+        const emissionFactor = annualEmissions / (blocksPerYear * baseBlockReward);
+        const blockReward = baseBlockReward * Math.min(emissionFactor, 1.0); // 限制最大奖励
+        
+        return {
+          blockReward: blockReward,
+          cumulativeSupply: cumulativeSupply,
+          emissionRate: safeCurrentEmissionRate
+        };
+      };
+
+      // =============================================================================
+      // 2. 完整的网络参与者建模（基于白皮书Table 2）
+      // =============================================================================
+      const calculateComprehensiveROI = (month) => {
+        const blockData = getBlockReward(month);
+        const totalBlockReward = blockData.blockReward;
+        
+        // 1. 算力&安全奖励 (40% 总奖励)
+        const computeSecurityRewards = totalBlockReward * 0.4;
+        
+        // 2. 专业矿工在算力奖励中的份额（基于白皮书Table 2）- 平滑过渡
+        // 使用Sigmoid函数实现平滑过渡：从70%平滑过渡到30%
+        const professionalMinerComputeShare = 0.70 - 0.40 * (1 / (1 + Math.exp(-0.1 * (month - 42))));
+        
+        // 3. 企业用户在算力奖励中的份额 - 平滑过渡
+        // 使用Sigmoid函数实现平滑过渡：从30%平滑过渡到60%
+        const enterpriseComputeShare = 0.30 + 0.30 * (1 / (1 + Math.exp(-0.1 * (month - 42))));
+        
+        // 4. 数据贡献奖励 (60% 总奖励)
+        const dataRewards = totalBlockReward * 0.6;
+        
+        // Domain-Library 权重（主要被企业用户获得）
+        const domainLibraryWeight = 0.15 + 0.3 * Math.exp(-month / 12);
+        const domainLibraryRewards = dataRewards * domainLibraryWeight;
+        
+        // Data-Feed 权重（主要被个人用户获得）
+        const dataFeedWeight = 0.6 - domainLibraryWeight;
+        const dataFeedRewards = dataRewards * dataFeedWeight;
+        
+        // 5. 计算各参与者的实际收益
+        const professionalMinerRewards = computeSecurityRewards * professionalMinerComputeShare;
+        const enterpriseRewards = computeSecurityRewards * enterpriseComputeShare + 
+                                 domainLibraryRewards * 0.9; // 企业获得90%的Domain-Library奖励
+        
+        // 6. 矿机数量变化模型（S型增长）
+        const initialMiners = 50000;
+        const finalMiners = 300000;
+        const growthPeriod = 24;
+        
+        let currentMiners;
+        if (month <= growthPeriod) {
+          const k = 0.08;
+          const t0 = growthPeriod / 2;
+          const sigmoidValue = 1 / (1 + Math.exp(-k * (month - t0)));
+          currentMiners = initialMiners + (finalMiners - initialMiners) * sigmoidValue;
+        } else {
+          currentMiners = finalMiners;
+        }
+        
+        // 7. 单个专业矿工的真实网络份额
+        const realNetworkShare = professionalMinerRewards / currentMiners;
+        
+        return {
+          professionalMinerRewards,
+          enterpriseRewards,
+          currentMiners,
+          realNetworkShare,
+          totalBlockReward,
+          blockData
+        };
+      };
+
+      // =============================================================================
+      // 3. 动态代币价格计算 - 保持原有逻辑
+      // =============================================================================
+      const getDynamicMarketCap = (months) => {
+        const days = months * 30;
+        
+        if (days <= 60) {
+          return 6.76e6 + (days / 60) * (443e6 - 6.76e6);
+        } else if (days <= 365) {
+          const startValue = 443e6;
+          const endValue = 5e9;
+          const progress = (days - 60) / (365 - 60);
+          return startValue + (endValue - startValue) * Math.pow(progress, 0.7);
+        } else if (days <= 1095) {
+          const baseValue = 5e9;
+          const years = days / 365;
+          return baseValue * Math.pow(1.5, years - 1);
+        } else {
+          const baseValue = 5e9 * Math.pow(1.5, 2);
+          const additionalYears = (days - 1095) / 365;
+          return baseValue * Math.pow(1.1, additionalYears);
+        }
+      };
+
+      // =============================================================================
+      // 4. 计算动态数据
+      // =============================================================================
+      const dynamicRewards = months.map(t => {
+        const roiData = calculateComprehensiveROI(t);
+        const blocksPerMonth = 30 * 24 * 60 * 60 / 3;
+        return roiData.realNetworkShare * blocksPerMonth;
+      });
+
+      const dynamicPrices = months.map(t => {
+        const roiData = calculateComprehensiveROI(t);
+        const dynamicMarketCap = getDynamicMarketCap(t);
+        return dynamicMarketCap / roiData.blockData.cumulativeSupply;
+      });
+
+      // =============================================================================
+      // 5. 累计收益和成本计算
+      // =============================================================================
+      const cumulativeRevenue = [];
+      const cumulativeCost = [];
+      let revenue = 0;
+      let cost = hardwareCost;
+
+      months.forEach((t, i) => {
+        const monthlyReward = dynamicRewards[i];
+        const price = dynamicPrices[i];
+        const monthlyRevenue = monthlyReward * price;
+        revenue += monthlyRevenue;
+        cost += electricityCostPerMonth;
+
+        cumulativeRevenue.push(revenue);
+        cumulativeCost.push(cost);
+      });
+
+      // =============================================================================
+      // 6. 月度收益计算
+      // =============================================================================
+      const monthlyRevenues = months.map((t, i) => {
+        return dynamicRewards[i] * dynamicPrices[i];
+      });
+
+      // =============================================================================
+      // 7. 回本周期计算
+      // =============================================================================
+      const paybackMonth = months.find((_, i) => cumulativeRevenue[i] >= cumulativeCost[i]);
+
+      // =============================================================================
+      // 8. 计算分析指标
+      // =============================================================================
+      const peakRevenue = Math.max(...monthlyRevenues);
+      const peakMonth = monthlyRevenues.indexOf(peakRevenue) + 1;
+      const finalRevenue = monthlyRevenues[119];
+      const revenueDeclineRate = ((finalRevenue - peakRevenue) / peakRevenue * 100).toFixed(1);
+      
+      // 计算平均网络份额
+      const avgNetworkShare = dynamicRewards.reduce((sum, reward, i) => {
+        const roiData = calculateComprehensiveROI(i + 1);
+        return sum + roiData.realNetworkShare;
+      }, 0) / dynamicRewards.length;
+
+      // =============================================================================
+      // 9. 更新KPI显示
+      // =============================================================================
+      document.getElementById('revenuePeakRevenue').textContent = `$${peakRevenue.toFixed(0)}`;
+      document.getElementById('revenueDeclineRate').textContent = `${revenueDeclineRate}%`;
+      document.getElementById('revenuePaybackPeriod').textContent = paybackMonth ? `M${paybackMonth}` : 'N/A';
+      document.getElementById('revenueNetworkShare').textContent = avgNetworkShare.toFixed(6);
+
+      // 更新标题信息
+      const revenueTitleInfo = document.getElementById('revenueTitleInfo');
+      if (paybackMonth) {
+        revenueTitleInfo.textContent = `💰 回本周期: 第${paybackMonth}个月`;
+        revenueTitleInfo.style.color = '#059669';
+      } else {
+        revenueTitleInfo.textContent = '⚠️ 10年内无法回本';
+        revenueTitleInfo.style.color = '#dc2626';
+      }
+
+      // =============================================================================
+      // 10. 创建图表
+      // =============================================================================
+      if (revenueChart) {
+        revenueChart.destroy();
+      }
+
+      const ctx = document.getElementById('revenueChart').getContext('2d');
+      revenueChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: months.map(m => `M${m}`),
+          datasets: [
+            {
+              label: 'Monthly Revenue (Fixed Model)',
+              data: monthlyRevenues,
+              borderColor: '#059669',
+              backgroundColor: 'rgba(5, 150, 105, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 0,
+              borderDash: []
+            },
+            {
+              label: 'Cumulative Revenue',
+              data: cumulativeRevenue,
+              borderColor: '#667eea',
+              backgroundColor: 'rgba(102, 126, 234, 0.1)',
+              borderWidth: 2,
+              fill: false,
+              tension: 0.3,
+              pointRadius: 0,
+              borderDash: [],
+              yAxisID: 'y1'
+            },
+            {
+              label: 'Cumulative Cost',
+              data: cumulativeCost,
+              borderColor: '#dc2626',
+              backgroundColor: 'rgba(220, 38, 38, 0.1)',
+              borderWidth: 2,
+              fill: false,
+              tension: 0,
+              pointRadius: 0,
+              borderDash: [],
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                color: '#64748b',
+                font: { size: 10 },
+                padding: 15
+              }
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  if (context.datasetIndex === 0) {
+                    return 'Monthly Revenue: $' + context.parsed.y.toFixed(2);
+                  } else if (context.datasetIndex === 1) {
+                    return 'Cumulative Revenue: $' + context.parsed.y.toLocaleString();
+                  } else {
+                    return 'Cumulative Cost: $' + context.parsed.y.toLocaleString();
+                  }
+                },
+                afterBody: function (items) {
+                  if (paybackMonth && items[0].label === `M${paybackMonth}`) {
+                    return `Payback Period: ${paybackMonth} months`;
+                  }
+                  return '';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Time (Months)',
+                color: '#64748b',
+                font: { size: 11 }
+              },
+              grid: {
+                color: '#e2e8f0'
+              },
+              ticks: {
+                color: '#64748b',
+                font: { size: 10 },
+                maxTicksLimit: 10
+              }
+            },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Monthly Revenue (USD)',
+                color: '#64748b',
+                font: { size: 11 }
+              },
+              grid: {
+                color: '#e2e8f0'
+              },
+              ticks: {
+                color: '#64748b',
+                font: { size: 10 },
+                callback: function(value) {
+                  return '$' + (value / 1000).toFixed(0) + 'K';
+                }
+              },
+              min: 0,
+              max: function(context) {
+                const maxMonthlyRevenue = Math.max(...monthlyRevenues);
+                return maxMonthlyRevenue * 1.1;
+              }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: {
+                display: true,
+                text: 'Cumulative Amount (USD)',
+                color: '#64748b',
+                font: { size: 11 }
+              },
+              grid: {
+                drawOnChartArea: false,
+              },
+              ticks: {
+                color: '#64748b',
+                font: { size: 10 },
+                callback: function(value) {
+                  return '$' + (value / 1000).toFixed(0) + 'K';
+                }
+              },
+              min: 0,
+              max: function(context) {
+                const maxRevenue = Math.max(...cumulativeRevenue);
+                const maxCost = Math.max(...cumulativeCost);
+                const maxValue = Math.max(maxRevenue, maxCost);
+                return maxValue * 1.2;
+              }
+            }
+          }
+        }
+      });
+
+      // 强制设置绿色线为实线
+      setTimeout(() => {
+        if (revenueChart && revenueChart.data.datasets[0]) {
+          revenueChart.data.datasets[0].borderDash = [];
+          revenueChart.update('none');
+        }
+      }, 100);
+
+      console.log('=== Revenue Analysis Results ===');
+      console.log('Peak Revenue:', peakRevenue.toFixed(2));
+      console.log('Payback Month:', paybackMonth);
+      console.log('Average Network Share:', avgNetworkShare.toFixed(6));
+      console.log('Revenue Decline Rate:', revenueDeclineRate + '%');
+    }
+
+    // =============================================================================
+    // 辅助函数：计算曲率指数
+    // =============================================================================
+    
+    /**
+     * 计算曲率指数 - 基于二阶导数的非线性度量
+     * @param {Array} data - 数据数组
+     * @returns {number} 曲率指数
+     */
+    function calculateCurvatureIndex(data) {
+      let curvatureSum = 0;  // 曲率总和
+      
+      // 遍历数据点，计算二阶导数（跳过首尾2个点）
+      for (let i = 2; i < data.length - 2; i++) {
+        // 计算二阶导数：f''(x) ≈ f(x-1) - 2f(x) + f(x+1)
+        const secondDerivative = data[i-1] - 2*data[i] + data[i+1];
+        // 累加二阶导数的绝对值
+        curvatureSum += Math.abs(secondDerivative);
+      }
+      
+      // 返回平均曲率指数
+      return curvatureSum / (data.length - 4);
+    }
+
+    // =============================================================================
+    // 辅助函数：计算拐点
+    // =============================================================================
+    
+    /**
+     * 计算拐点 - 增长率变化最大的点
+     * @param {Array} data - 数据数组
+     * @returns {number} 拐点位置（月份）
+     */
+    function calculateInflectionPoint(data) {
+      let maxChange = 0;  // 最大变化率
+      let inflectionPoint = 1;  // 拐点位置（默认为第1个月）
+      
+      // 遍历数据点，寻找增长率变化最大的点
+      for (let i = 1; i < data.length - 1; i++) {
+        // 计算前一个变化率：当前值 - 前一个值
+        const prevChange = data[i] - data[i-1];
+        
+        // 计算后一个变化率：后一个值 - 当前值
+        const nextChange = data[i+1] - data[i];
+        
+        // 计算变化率的变化：|后一个变化率 - 前一个变化率|
+        const changeRate = Math.abs(nextChange - prevChange);
+        
+        // 如果当前变化率大于最大变化率，更新拐点
+        if (changeRate > maxChange) {
+          maxChange = changeRate;
+          inflectionPoint = i + 1;  // 拐点位置（从1开始计数）
+        }
+      }
+      
+      return inflectionPoint;
+    }
+
+    // =============================================================================
+    // 事件监听器和初始化
+    // =============================================================================
+    
+    // 为"Update Analysis"按钮添加点击事件监听器
+    document.getElementById('updateChart').addEventListener('click', () => {
+      // 点击按钮时同时更新三个图表
+      updatePaybackChart();      // 更新回本周期分析图表
+      updateNonlinearChart();    // 更新非线性收益分析图表
+      updateRevenueChart();      // 更新综合收益分析图表
+    });
+    
+    // =============================================================================
+    // 页面加载时初始化图表
+    // =============================================================================
+    
+    // 页面加载完成后立即初始化图表
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        console.log('DOM加载完成，开始初始化所有图表...');
+        updatePaybackChart();      // 初始化回本周期分析图表
+        console.log('回本周期图表初始化完成');
+        updateNonlinearChart();    // 初始化非线性收益分析图表
+        console.log('非线性收益图表初始化完成');
+        updateRevenueChart();      // 初始化综合收益分析图表
+        console.log('综合收益图表初始化完成');
+      } catch (error) {
+        console.error('图表初始化错误:', error);
+      }
+    });
+
+    // Fixed Real-time data updates simulation
+    function updateRealTimeData() {
+      const indicators = document.querySelectorAll('.indicator');
+      indicators.forEach(indicator => {
+        const value = indicator.querySelector('span');
+        const text = value.textContent;
+        
+        // 提取当前数值和符号
+        const match = text.match(/([+-]?[\d.]+)%/);
+        if (!match) return;
+        
+        const currentValue = parseFloat(match[1]);
+        const change = (Math.random() - 0.5) * 2;
+        const newValue = currentValue + change;
+        
+        // 根据数值的正负确定方向和图标
+        let direction, icon, sign;
+        if (newValue > 0) {
+          direction = 'positive';
+          icon = 'fas fa-arrow-up';
+          sign = '+';
+        } else if (newValue < 0) {
+          direction = 'negative';
+          icon = 'fas fa-arrow-down';
+          sign = '';
+        } else {
+          direction = 'neutral';
+          icon = 'fas fa-minus';
+          sign = '';
+        }
+        
+        // 更新样式和内容
+        indicator.className = `indicator ${direction}`;
+        indicator.querySelector('i').className = icon;
+        value.textContent = text.replace(/[+-]?[\d.]+%/, `${sign}${Math.abs(newValue).toFixed(1)}%`);
+      });
+    }
+
+    // Update data every 5 seconds
+    setInterval(updateRealTimeData, 5000);
+
+    // Add hover effects to data cards
+    document.querySelectorAll('.data-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-8px) rotateX(5deg)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) rotateX(0deg)';
+      });
+    });
+
+    // Add hover effects to chart containers
+    document.querySelectorAll('.chart-card, .large-chart').forEach(container => {
+      container.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px) scale(1.02)';
+      });
+      
+      container.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>

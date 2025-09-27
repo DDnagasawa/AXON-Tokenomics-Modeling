@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Issuance Model Parameter Analysis Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fafbff 0%, #f6f8ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #4a5b73;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #e8edff 0%, #e0e7ff 100%);
+            border-radius: 20px;
+            color: #5b6b8a;
+            box-shadow: 0 4px 20px rgba(139, 148, 202, 0.15);
+            border: 1px solid rgba(139, 148, 202, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .table-section {
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(139, 148, 202, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(215, 221, 255, 0.3);
+        }
+
+        .table-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #6b73a1;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f4ff;
+            position: relative;
+        }
+
+        .table-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, #c4ceff, #a7b5ff);
+            border-radius: 1px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(139, 148, 202, 0.08);
+        }
+
+        th {
+            background: linear-gradient(135deg, #dde4ff 0%, #d1dbff 100%);
+            color: #5b6b8a;
+            padding: 16px 12px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(139, 148, 202, 0.1);
+        }
+
+        td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid #f1f4ff;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #fafbff;
+        }
+
+        tr:hover td {
+            background-color: #f2f5ff;
+            transform: translateY(-1px);
+        }
+
+        .recommendation {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            color: #5b6b8a;
+            border: 1px solid;
+        }
+
+        .recommended, .strongly-recommended, .high-risk-recommended {
+            background: linear-gradient(135deg, #e8f5e8, #f0fff0);
+            border-color: #b8e6b8;
+            color: #4a7c59;
+        }
+
+        .standard {
+            background: linear-gradient(135deg, #e8f2ff, #f0f8ff);
+            border-color: #b8d4ff;
+            color: #4a6fa5;
+        }
+
+        .cautious {
+            background: linear-gradient(135deg, #fff4e6, #fffaf0);
+            border-color: #ffcc99;
+            color: #b8860b;
+        }
+
+        .not-recommended {
+            background: linear-gradient(135deg, #ffe8e8, #fff0f0);
+            border-color: #ffb8b8;
+            color: #d63384;
+        }
+
+        .risk-level {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid;
+        }
+
+        .low, .very-low {
+            background: #f0fff4;
+            color: #22543d;
+            border-color: #68d391;
+        }
+
+        .medium {
+            background: #fffaf0;
+            color: #744210;
+            border-color: #f6ad55;
+        }
+
+        .high, .very-high {
+            background: #fef5e7;
+            color: #7b341e;
+            border-color: #f093fb;
+        }
+
+        .notes-section {
+            background: linear-gradient(135deg, #f8faff 0%, #f5f8ff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            border-left: 4px solid #c4ceff;
+            box-shadow: 0 2px 12px rgba(139, 148, 202, 0.08);
+            border: 1px solid rgba(215, 221, 255, 0.3);
+        }
+
+        .notes-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #6b73a1;
+            margin-bottom: 15px;
+        }
+
+        .notes-content {
+            line-height: 1.7;
+            color: #5b6b8a;
+        }
+
+        .sensitivity-table {
+            background: linear-gradient(135deg, #fafbff 0%, #f6f8ff 100%);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 8px 6px;
+            }
+
+            .table-section {
+                padding: 16px;
+            }
+        }
+
+        .highlight-number {
+            font-weight: 600;
+            color: #6b73a1;
+        }
+
+        .market-scenario {
+            font-style: italic;
+            color: #7b8ab0;
+        }
+
+        .period-text {
+            color: #8b94ca;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Token Issuance Model Parameter Analysis Report</h1>
+            <p>Comprehensive Assessment and Investment Recommendations Based on Revenue Analysis Module</p>
+        </div>
+
+        <div class="table-section">
+            <div class="table-title">Table A: Issuance Model Parameter Analysis</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>λ Value</th>
+                        <th>a Value</th>
+                        <th>Initial Network Share</th>
+                        <th>Payback Period (Months)</th>
+                        <th>Market Scenario</th>
+                        <th>Risk Level</th>
+                        <th>Investment Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="highlight-number">0.005</td>
+                        <td class="highlight-number">2</td>
+                        <td>2e-06</td>
+                        <td class="period-text">15-20</td>
+                        <td class="market-scenario">Conservative</td>
+                        <td><span class="risk-level low">Low</span></td>
+                        <td><span class="recommendation recommended">Recommended</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">0.01</td>
+                        <td class="highlight-number">2.5</td>
+                        <td>2e-06</td>
+                        <td class="period-text">>24</td>
+                        <td class="market-scenario">Baseline</td>
+                        <td><span class="risk-level medium">Medium</span></td>
+                        <td><span class="recommendation standard">Standard</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">0.02</td>
+                        <td class="highlight-number">3</td>
+                        <td>2e-06</td>
+                        <td class="period-text">>36</td>
+                        <td class="market-scenario">Aggressive</td>
+                        <td><span class="risk-level high">High</span></td>
+                        <td><span class="recommendation cautious">Cautious</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">0.003</td>
+                        <td class="highlight-number">1.5</td>
+                        <td>2e-06</td>
+                        <td class="period-text">46009</td>
+                        <td class="market-scenario">Ultra Conservative</td>
+                        <td><span class="risk-level very-low">Very Low</span></td>
+                        <td><span class="recommendation strongly-recommended">Strongly Recommended</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">0.05</td>
+                        <td class="highlight-number">4</td>
+                        <td>2e-06</td>
+                        <td class="period-text">>48</td>
+                        <td class="market-scenario">Ultra Aggressive</td>
+                        <td><span class="risk-level very-high">Very High</span></td>
+                        <td><span class="recommendation not-recommended">Not Recommended</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-section">
+            <div class="table-title">Table B: Market Scenario Analysis</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Market Cap Growth</th>
+                        <th>Token Price Trend</th>
+                        <th>Payback Period (Months)</th>
+                        <th>Market Sentiment</th>
+                        <th>Investment Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Filecoin Benchmark</td>
+                        <td class="market-scenario">Dynamic Calculation</td>
+                        <td class="period-text">>24</td>
+                        <td class="market-scenario">Neutral</td>
+                        <td><span class="recommendation standard">Standard</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">0.5</td>
+                        <td class="market-scenario">Rising</td>
+                        <td class="period-text">>18</td>
+                        <td class="market-scenario">Optimistic</td>
+                        <td><span class="recommendation recommended">Recommended</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">-0.3</td>
+                        <td class="market-scenario">Declining</td>
+                        <td class="period-text">>36</td>
+                        <td class="market-scenario">Pessimistic</td>
+                        <td><span class="recommendation cautious">Cautious</span></td>
+                    </tr>
+                    <tr>
+                        <td>=10%/year</td>
+                        <td class="market-scenario">Steady Rise</td>
+                        <td class="period-text">>20</td>
+                        <td class="market-scenario">Stable</td>
+                        <td><span class="recommendation recommended">Recommended</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">1</td>
+                        <td class="market-scenario">Rapid Rise</td>
+                        <td class="period-text">>12</td>
+                        <td class="market-scenario">Euphoric</td>
+                        <td><span class="recommendation high-risk-recommended">High Risk Recommended</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-section">
+            <div class="table-title">Table C: Network Share Distribution Analysis</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Professional Miner Share</th>
+                        <th>Enterprise Share</th>
+                        <th>Individual Share</th>
+                        <th>Payback Period (Months)</th>
+                        <th>Distribution Fairness</th>
+                        <th>Investment Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>28%→12%</td>
+                        <td>30%→60%</td>
+                        <td>42%→28%</td>
+                        <td class="period-text">>24</td>
+                        <td class="market-scenario">Baseline</td>
+                        <td><span class="recommendation standard">Standard</span></td>
+                    </tr>
+                    <tr>
+                        <td>35%→20%</td>
+                        <td>25%→50%</td>
+                        <td>40%→30%</td>
+                        <td class="period-text">>18</td>
+                        <td class="market-scenario">Miner Friendly</td>
+                        <td><span class="recommendation recommended">Recommended</span></td>
+                    </tr>
+                    <tr>
+                        <td>20%→8%</td>
+                        <td>40%→70%</td>
+                        <td>40%→22%</td>
+                        <td class="period-text">>30</td>
+                        <td class="market-scenario">Enterprise Dominated</td>
+                        <td><span class="recommendation cautious">Cautious</span></td>
+                    </tr>
+                    <tr>
+                        <td>30%→15%</td>
+                        <td>35%→55%</td>
+                        <td>35%→30%</td>
+                        <td class="period-text">>20</td>
+                        <td class="market-scenario">Balanced</td>
+                        <td><span class="recommendation recommended">Recommended</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-section sensitivity-table">
+            <div class="table-title">Table E: Parameter Sensitivity Ranking</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Impact Level</th>
+                        <th>Parameter Category</th>
+                        <th>Impact Range</th>
+                        <th>Recommended Attention Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="highlight-number">1</td>
+                        <td>Market Scenario</td>
+                        <td class="period-text">>12-48 months</td>
+                        <td><span class="risk-level very-high">Very High</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">2</td>
+                        <td>Cost Parameters</td>
+                        <td class="period-text">>15-48 months</td>
+                        <td><span class="risk-level high">High</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">3</td>
+                        <td>Issuance Model</td>
+                        <td class="period-text">>12-48 months</td>
+                        <td><span class="risk-level high">High</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">4</td>
+                        <td>Mining Scale</td>
+                        <td class="period-text">>18-36 months</td>
+                        <td><span class="risk-level medium">Medium</span></td>
+                    </tr>
+                    <tr>
+                        <td class="highlight-number">5</td>
+                        <td>Network Share</td>
+                        <td class="period-text">>18-30 months</td>
+                        <td><span class="risk-level medium">Medium</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="notes-section">
+            <div class="notes-title">Important Notes</div>
+            <div class="notes-content">
+                <p><strong>1. Based on actual calculations from the Revenue Analysis module, all scenario payback periods are longer than expected</strong></p>
+                <br>
+                <p><strong>Actual Parameter Verification:</strong></p>
+                <p>• λ value: <span class="highlight-number">0.01</span>, a value: <span class="highlight-number">2.5</span></p>
+                <p>• Hardware cost: <span class="highlight-number">$5,000</span>, Electricity cost: <span class="highlight-number">$288/month</span>, Total cost = Hardware cost + Electricity cost × Time</p>
+                <p>• Network share: <span class="highlight-number">0.0002%</span></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+{
+  "test_config": {
+    "description": "Revenue Analysis 模块测试配置",
+    "version": "1.0.0",
+    "test_parameters": {
+      "whitepaper_params": {
+        "lambda_min": 0.01,
+        "a": 2.5,
+        "total_supply": 86000000000,
+        "initial_allocation": 4300000000,
+        "fair_launch_pool": 81700000000
+      },
+      "mining_params": {
+        "initial_miners": 50000,
+        "final_miners": 300000,
+        "growth_period": 24,
+        "growth_rate_k": 0.08
+      },
+      "cost_params": {
+        "hardware_cost": 5000,
+        "electricity_cost_per_kwh": 0.16,
+        "power_consumption": 2.5,
+        "hours_per_month": 720
+      },
+      "block_params": {
+        "base_block_reward": 5000,
+        "block_time_seconds": 3,
+        "blocks_per_year": 10512000,
+        "blocks_per_month": 864000
+      },
+      "market_cap_params": {
+        "launch_period_days": 60,
+        "growth_period_days": 365,
+        "mature_period_days": 1095,
+        "initial_market_cap": 6760000,
+        "growth_market_cap": 443000000,
+        "mature_market_cap": 5000000000,
+        "growth_rate_early": 1.5,
+        "growth_rate_stable": 1.1
+      }
+    },
+    "test_cases": {
+      "emission_rate_tests": [
+        {
+          "name": "normal_supply_ratio",
+          "cumulative_supply": 10000000000,
+          "expected_range": [0.01, 1.0]
+        },
+        {
+          "name": "high_supply_ratio",
+          "cumulative_supply": 85900000000,
+          "expected_range": [0.01, 1.0]
+        },
+        {
+          "name": "extreme_supply_ratio",
+          "cumulative_supply": 85990000000,
+          "expected_range": [0.01, 1.0]
+        }
+      ],
+      "block_reward_tests": [
+        {
+          "name": "month_1",
+          "month": 1,
+          "expected_range": [0, 5000]
+        },
+        {
+          "name": "month_60",
+          "month": 60,
+          "expected_range": [0, 5000]
+        },
+        {
+          "name": "month_120",
+          "month": 120,
+          "expected_range": [0, 5000]
+        }
+      ],
+      "miner_growth_tests": [
+        {
+          "name": "initial_month",
+          "month": 1,
+          "expected_range": [50000, 50000]
+        },
+        {
+          "name": "growth_midpoint",
+          "month": 12,
+          "expected_range": [50000, 300000]
+        },
+        {
+          "name": "growth_end",
+          "month": 24,
+          "expected_range": [250000, 300000]
+        },
+        {
+          "name": "stable_period",
+          "month": 60,
+          "expected_range": [300000, 300000]
+        }
+      ],
+      "network_participant_tests": [
+        {
+          "name": "early_stage",
+          "month": 12,
+          "professional_miner_share": 0.70,
+          "enterprise_share": 0.30
+        },
+        {
+          "name": "mid_stage",
+          "month": 36,
+          "professional_miner_share": 0.50,
+          "enterprise_share": 0.45
+        },
+        {
+          "name": "late_stage",
+          "month": 72,
+          "professional_miner_share": 0.30,
+          "enterprise_share": 0.60
+        }
+      ],
+      "market_cap_tests": [
+        {
+          "name": "launch_period",
+          "month": 1,
+          "expected_range": [6760000, 100000000]
+        },
+        {
+          "name": "growth_period",
+          "month": 12,
+          "expected_range": [100000000, 10000000000]
+        },
+        {
+          "name": "mature_period",
+          "month": 36,
+          "expected_range": [10000000000, 100000000000]
+        }
+      ]
+    },
+    "validation_rules": {
+      "emission_rate": {
+        "min_value": 0.01,
+        "max_value": 1.0,
+        "must_be_finite": true,
+        "must_be_positive": true
+      },
+      "block_reward": {
+        "min_value": 0,
+        "max_value": 5000,
+        "must_be_finite": true,
+        "must_be_positive": true
+      },
+      "miner_count": {
+        "min_value": 50000,
+        "max_value": 300000,
+        "must_be_finite": true,
+        "must_be_positive": true
+      },
+      "token_price": {
+        "min_value": 0,
+        "must_be_finite": true,
+        "must_be_positive": true
+      },
+      "market_cap": {
+        "min_value": 6760000,
+        "must_be_finite": true,
+        "must_be_positive": true
+      }
+    },
+    "test_output": {
+      "console_output": true,
+      "detailed_logging": true,
+      "save_results": false,
+      "results_file": "test_results.json"
+    }
+  }
+}
+

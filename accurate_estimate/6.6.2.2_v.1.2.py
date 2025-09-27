@@ -379,11 +379,17 @@ class UpdatedFormulaEngine:
         根据发行率计算区块奖励 - 使用公式(33)
         
         基于第6.2节发行模型：
-        ΔXblock = v(Xcurrent) · (N - Xcurrent) · (Tblock/Tyear)
+        年发行量 = v(Xcurrent) · (N - Xcurrent)
+        区块奖励 = 年发行量 / 年区块数
         """
-        # 公式(33): ΔXblock = v(Xcurrent) · (N - Xcurrent) · (Tblock/Tyear)
-        time_ratio = self.params.block_time_seconds / UpdatedPaperConstants.SECONDS_PER_YEAR
-        block_reward = emission_rate * remaining_supply * time_ratio
+        # 计算年发行量
+        annual_emissions = emission_rate * remaining_supply
+        
+        # 计算年区块数
+        blocks_per_year = self.params.blocks_per_year
+        
+        # 区块奖励 = 年发行量 / 年区块数
+        block_reward = annual_emissions / blocks_per_year
         
         return block_reward
 
@@ -564,8 +570,9 @@ class UpdatedAXONSimulator:
         data_contribution_pool = block_reward * self.reward_structure.data_contribution_share
         
         # 4. 数据奖励细分 (公式34和35的应用)
-        domain_library_pool = data_contribution_pool * (wdl / self.weights_config.total_data_weight)
-        data_feed_pool = data_contribution_pool * (wdf / self.weights_config.total_data_weight)
+        # 直接使用权重，不需要归一化，因为 WDL(t) + WDF(t) = 0.6
+        domain_library_pool = data_contribution_pool * wdl
+        data_feed_pool = data_contribution_pool * wdf
         
         # 5. 参与者分配 (表格2)
         ratios = self.allocation_strategy.get_ratios(year)
@@ -589,6 +596,11 @@ class UpdatedAXONSimulator:
                                           df_pool: float, ratios: UpdatedParticipantRatios) -> Dict:
         """
         根据表格2计算参与者奖励分配 - v1.2.0版本
+        
+        根据PDF表格2，参与者分配基于总奖励的百分比：
+        - 专业矿工：只从Compute & Security池获得奖励
+        - 企业用户：从Compute & Security池和Domain-Library池获得奖励
+        - 零售用户：从Compute & Security池、Domain-Library池和Data-Feed池获得奖励
         """
         # 计算各参与者的总奖励
         pro_miners_total = compute_pool * ratios.pro_miners_compute
@@ -600,14 +612,15 @@ class UpdatedAXONSimulator:
                        dl_pool * ratios.retail_dl + 
                        df_pool * ratios.retail_df)
         
-        # 计算百分比分配
+        # 计算总奖励
         total_rewards = pro_miners_total + enterprise_total + retail_total
         
         # 验证总奖励等于区块奖励
         expected_total = compute_pool + dl_pool + df_pool
         if abs(total_rewards - expected_total) > UpdatedPaperConstants.TOLERANCE:
-            raise ValueError(f"参与者奖励总和({total_rewards})不等于区块奖励({expected_total})")
+            raise ValueError(f"参与者奖励总和({total_rewards:.6f})不等于区块奖励({expected_total:.6f})")
         
+        # 计算百分比分配
         return {
             'pro_miners_pct': (pro_miners_total / total_rewards) * UpdatedPaperConstants.PERCENTAGE_SCALE,
             'enterprise_pct': (enterprise_total / total_rewards) * UpdatedPaperConstants.PERCENTAGE_SCALE,
