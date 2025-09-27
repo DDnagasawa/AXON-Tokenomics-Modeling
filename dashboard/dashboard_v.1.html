@@ -632,6 +632,20 @@
       font-size: 8px;
     }
 
+    /* 用户行为热力图专用样式 - 6x6网格 */
+    #userBehaviorMatrix {
+      grid-template-columns: repeat(7, 1fr) !important;  /* 6个数据列 + 1个标签列 */
+      grid-template-rows: repeat(7, 1fr) !important;     /* 6个数据行 + 1个标签行 */
+      min-width: 350px !important;
+      min-height: 350px !important;
+    }
+
+    #userBehaviorMatrix .heatmap-cell {
+      min-width: 40px !important;
+      min-height: 40px !important;
+      font-size: 10px !important;
+    }
+
     .color-legend {
       display: flex;
       flex-direction: column;
@@ -649,7 +663,7 @@
     }
 
     .user-color-bar {
-      background: linear-gradient(to bottom, #1e40af, #60a5fa, #dbeafe);
+      background: linear-gradient(to bottom, #7CCBFF, #7CE7FF);
     }
 
     .color-labels {
@@ -2103,10 +2117,11 @@
           const maxValue = Math.max(...userBehaviorData.flat());
           const intensity = value / maxValue;
           
-          // 设置颜色：浅蓝到深蓝渐变
-          const blue = Math.round(100 + intensity * 155); // 100-255
-          const green = Math.round(150 + intensity * 105); // 150-255
-          const red = Math.round(200 + intensity * 55);   // 200-255
+          // 设置颜色：浅蓝色 #7CE7FF 到深蓝色 #7CCBFF 渐变
+          // 浅蓝色 #7CE7FF (124, 231, 255) 到深蓝色 #7CCBFF (124, 203, 255)
+          const red = Math.round(124);                    // 124 (保持不变)
+          const green = Math.round(231 - intensity * 28); // 231-203
+          const blue = Math.round(255);                   // 255 (保持不变)
           cell.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
           
           // 设置文字颜色
@@ -2691,4 +2706,15 @@
     });
 
     // Add hover effects to chart containers
-    document.querySelectorAll('.chart-card, .large-chart')
+    document.querySelectorAll('.chart-card, .large-chart').forEach(container => {
+      container.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px) scale(1.02)';
+      });
+      
+      container.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>
