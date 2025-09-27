@@ -2163,10 +2163,10 @@
      * 4. 合理的区块奖励设置
      */
     function updateRevenueChart() {
-      // 从HTML输入框获取参数
-      const hardwareCost = parseFloat(document.getElementById('hardwareCost').value);
-      const electricityCostPerKWh = parseFloat(document.getElementById('electricityCost').value);
-      const powerConsumption = parseFloat(document.getElementById('powerConsumption').value);
+      // 使用默认参数（因为输入框已删除）
+      const hardwareCost = 5000;  // 硬件成本 $5,000
+      const electricityCostPerKWh = 0.16;  // 电价 $0.16/kWh
+      const powerConsumption = 0.07;  // 功耗 70W = 0.07kW
       const electricityCostPerMonth = electricityCostPerKWh * powerConsumption * 720;
       
       console.log('=== Revenue Analysis Debug ===');
@@ -2620,6 +2620,21 @@
     // 事件监听器和初始化
     // =============================================================================
     
+
+    // =============================================================================
+    // 页面加载时初始化图表
+    // =============================================================================
+    
+    // 页面加载完成后立即初始化图表
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        console.log('DOM加载完成，开始初始化Revenue Analysis图表...');
+        updateRevenueChart();      // 初始化Revenue Analysis图表
+        console.log('Revenue Analysis图表初始化完成');
+      } catch (error) {
+        console.error('图表初始化错误:', error);
+      }
+    });
 
     // Fixed Real-time data updates simulation
     function updateRealTimeData() {
