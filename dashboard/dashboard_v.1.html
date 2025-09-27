@@ -643,7 +643,7 @@
     .color-bar {
       width: 16px;
       height: 150px;
-      background: linear-gradient(to bottom, #dc2626, #fca5a5, #ffffff, #93c5fd, #1d4ed8);
+      background: linear-gradient(to bottom, #8b5cf6, #c4b5fd, #f5f5fa, #bfdbfe, #3b82f6);
       border-radius: 8px;
       border: 1px solid #e2e8f0;
     }
@@ -2001,23 +2001,23 @@
           const value = correlationData[i][j];
           const absValue = Math.abs(value);
           
-          // 设置颜色
+          // 设置颜色 - 淡淡的紫色蓝色配色
           if (value > 0) {
-            // 正相关：白色到深红色
+            // 正相关：淡紫色到深紫色
             const intensity = absValue;
-            const red = Math.round(255 * (0.5 + intensity * 0.5));
-            const green = Math.round(255 * (0.5 - intensity * 0.5));
-            const blue = Math.round(255 * (0.5 - intensity * 0.5));
+            const red = Math.round(200 + intensity * 55);   // 200-255 (淡紫到深紫)
+            const green = Math.round(180 + intensity * 75); // 180-255
+            const blue = Math.round(220 + intensity * 35);  // 220-255
             cell.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
           } else if (value < 0) {
-            // 负相关：白色到深蓝色
+            // 负相关：淡蓝色到深蓝色
             const intensity = absValue;
-            const red = Math.round(255 * (0.5 - intensity * 0.5));
-            const green = Math.round(255 * (0.5 - intensity * 0.5));
-            const blue = Math.round(255 * (0.5 + intensity * 0.5));
+            const red = Math.round(180 + intensity * 75);   // 180-255 (淡蓝到深蓝)
+            const green = Math.round(200 + intensity * 55); // 200-255
+            const blue = Math.round(240 + intensity * 15); // 240-255
             cell.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
           } else {
-            cell.style.backgroundColor = 'white';
+            cell.style.backgroundColor = 'rgb(245, 245, 250)'; // 淡灰白色
           }
           
           // 设置文字颜色（深色背景用白色文字，浅色背景用黑色文字）
@@ -2165,8 +2165,8 @@
     function updateRevenueChart() {
       // 使用默认参数（因为输入框已删除）
       const hardwareCost = 5000;  // 硬件成本 $5,000
-      const electricityCostPerKWh = 0.16;  // 电价 $0.16/kWh
-      const powerConsumption = 0.07;  // 功耗 70W = 0.07kW
+      const electricityCostPerKWh = 0.12;  // 电价 $0.12/kWh
+      const powerConsumption = 2.5;  // 功耗 2.5kW
       const electricityCostPerMonth = electricityCostPerKWh * powerConsumption * 720;
       
       console.log('=== Revenue Analysis Debug ===');
