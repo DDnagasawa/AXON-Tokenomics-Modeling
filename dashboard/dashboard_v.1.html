@@ -1442,51 +1442,6 @@
               <div class="payback-chart">
                 <canvas id="revenueChart"></canvas>
               </div>
-              <div class="payback-stats">
-                <div class="stat-card">
-                  <div class="stat-value" id="revenuePeakRevenue">--</div>
-                  <div class="stat-label">Peak Monthly Revenue</div>
-                  <div class="stat-description">Highest monthly earnings</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value" id="revenueDeclineRate">--</div>
-                  <div class="stat-label">Revenue Decline Rate</div>
-                  <div class="stat-description">Annual decrease rate</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value" id="revenuePaybackPeriod">--</div>
-                  <div class="stat-label">Payback Period</div>
-                  <div class="stat-description">R(t) = C(t) intersection</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value" id="revenueNetworkShare">--</div>
-                  <div class="stat-label">Real Network Share</div>
-                  <div class="stat-description">Effective competition</div>
-                </div>
-              </div>
-            </div>
-          </div>
-                <div class="stat-card">
-                  <div class="stat-value" id="peakRevenue">--</div>
-                  <div class="stat-label">Peak Monthly Revenue</div>
-                  <div class="stat-description">Highest monthly earnings</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value" id="revenueDecline">--</div>
-                  <div class="stat-label">Revenue Decline Rate</div>
-                  <div class="stat-description">Annual decrease rate</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value" id="inflectionPoint">--</div>
-                  <div class="stat-label">Payback Period</div>
-                  <div class="stat-description">R(t) = C(t) intersection</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value" id="curvatureIndex">--</div>
-                  <div class="stat-label">Curvature Index</div>
-                  <div class="stat-description">Nonlinearity measure</div>
-                </div>
-              </div>
             </div>
           </div>
           
@@ -2960,17 +2915,7 @@
       // 10. 更新KPI统计信息显示
       // =============================================================================
       
-      // 更新峰值月度收益显示
-      document.getElementById('peakRevenue').textContent = `$${peakRevenue.toFixed(0)}`;
-      
-      // 更新收益衰减率显示
-      document.getElementById('revenueDecline').textContent = `${revenueDeclineRate}%`;
-      
-      // 更新回本周期显示（使用累计收益与成本交点）
-      document.getElementById('inflectionPoint').textContent = paybackMonth ? `M${paybackMonth}` : 'N/A';
-      
-      // 更新曲率指数显示
-      document.getElementById('curvatureIndex').textContent = curvatureIndex.toFixed(3);
+      // KPI卡片已删除，不再更新显示
 
       // =============================================================================
       // 11. 更新图表标题中的回本周期信息
@@ -3487,10 +3432,8 @@
       // =============================================================================
       // 9. 更新KPI显示
       // =============================================================================
-      document.getElementById('revenuePeakRevenue').textContent = `$${peakRevenue.toFixed(0)}`;
-      document.getElementById('revenueDeclineRate').textContent = `${revenueDeclineRate}%`;
-      document.getElementById('revenuePaybackPeriod').textContent = paybackMonth ? `M${paybackMonth}` : 'N/A';
-      document.getElementById('revenueNetworkShare').textContent = avgNetworkShare.toFixed(6);
+      
+      // KPI卡片已删除，不再更新显示
 
       // 更新标题信息
       const revenueTitleInfo = document.getElementById('revenueTitleInfo');
